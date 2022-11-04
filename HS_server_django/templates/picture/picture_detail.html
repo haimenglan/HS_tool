@@ -1,0 +1,25 @@
+{%extends 'HS_server/HS_server_top.html'%}
+{% load static %}
+    {%block style1%}
+        <style type="text/css"> 
+        	.wallpaper{
+        		margin:20px;
+        	}
+
+        </style>
+    {%endblock style1%}
+
+    {%block content1%}
+    	<!-- <a href="add_image"> add_image</a> -->
+    	<div class="picture_show">
+    		<img class="wallpaper" src="{% static ''%}{{img.path}}" alt="{{img.name}}" width=1350 height=800>
+    	</div>
+
+    {%endblock content1%}
+
+    {%block script1%}
+    <script language="javascript">
+
+
+    </script>
+    {%endblock script1%}

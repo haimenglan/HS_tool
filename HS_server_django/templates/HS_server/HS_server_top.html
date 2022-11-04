@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+    <head>  
+        <meta charset="UTF-8">
+        <meta http-equiv="Expires" content="0"> <!-- 阻止浏览器缓存 -->
+        <meta http-equiv="Pragma" content="no-cache">
+        <meta http-equiv="Cache-control" content="no-cache">
+        <meta http-equiv="Cache" content="no-cache">
+        <meta name="viewport" content="width=device-width, user-scalable=yes, initial-scale=0.8, maximum-scale=1.0, minimum-scale=0.8">
+        <script type="text/javascript", src="{% static 'HS_server/jquery-1.11.3/jquery.min.js' %}"></script>
+        <style type="text/css"> 
+            .index_body{
+                /*background-image:url("./images/background.jpg");
+                background-repeat: repeat-x;
+                background-attachment: fixed;
+                background-position:left-top;*/
+                margin:0px;
+                background:rgba(240,240,240,1);
+            }
+
+            .clearfix:after,.clearfix:before{ content: "";display: table;}
+            .clearfix:after{ clear:both;}
+            .clearfix{zoom:1;}
+            .body2{
+                position: absolute;
+                width:1400px;
+                height: 100%;
+                left: 50%;
+                margin-left: -700px;
+                top:0px;
+                background:rgba(240,240,240,1);
+            }
+            .web_name{
+                font-size: 32px;
+                height: 50px;
+                line-height: 50px;
+                padding-left: 10px;
+                text-align: bottom;
+                color: rgb(20, 90, 100);
+                background:rgba(240,240,240,1);
+            }
+            .web_name a{
+                text-decoration: none!important;
+                color: rgb(20, 90, 100);
+            }
+            .web_name a:hover{
+                color: blue;
+                cursor:pointer;
+            }
+            /*********************************顶部框架*********************************************/
+            .top{
+                margin-top: 0px;
+                height:50px;
+                line-height: 50px;
+                border-bottom-style: dashed;
+                border-bottom-width: 0px;
+                border-bottom-color: white;
+                /*border-radius: 10px;*/
+                z-index: 9999;
+                background-color: rgba(70,70,80,1);
+            }
+            .top .webname{
+                height: 50px;
+                float: left;
+                margin-left: 10px;
+                font-size: 22px;
+                color: orange;
+            }
+            .top .avatar{
+                float: left;
+                margin: 5px;
+                border-radius: 10px;
+            }
+            .top .user{
+                float: left;
+                padding-top: 10px;
+                height:40px;
+            }
+            .top .user div{
+                height: 20px;
+                line-height: 20px;
+                font-size: 12px;
+            }
+            .top .user em{
+                color: white;
+            }
+
+            .top .login{
+                /*position: relative;*/
+                float: right;
+                margin-right: 10px;
+                margin-top: 25px;
+                height:20px;
+                line-height: 20px;
+            }
+            .top .login ul{
+                height:20px;
+                margin: 0px;
+                list-style-type: none;
+            }
+            .top .login li{
+                float: left;
+                font-size: 12px;
+            }
+            .top .login li a{
+                margin-left: 10px;
+                padding: 4px;
+                color: white;
+                text-decoration: none;
+                text-align: center;
+                background-color: green;
+                border-radius: 5px;
+            }
+            .top .login li a:hover{
+                background-color: "#9999ff";
+                color: gold;
+            }
+            .friendly_link{
+                height:30px;
+                width:100%;
+                /*margin-top: 2px;*/
+                text-align: center;
+                background:rgba(50,50,60,1);
+                line-height: 30px;
+            }
+            .friendly_link ul{
+                height:30px;
+                margin: 0px;
+                padding-left: 0px;
+                text-align:center;
+            }
+            .friendly_link li{
+                float: left;
+                height: 30px;
+                /*width:75px; */
+                margin-left: 20px;
+                text-align:center;
+                list-style-type:none;
+            }
+            .friendly_link a{
+                color: white!important;
+                text-decoration: none!important;
+                font-size: 12px;
+                
+            }
+            .friendly_link a:hover{
+                color: yellow;
+            }
+        </style>
+        {%block style1%}
+            define you style here
+        {%endblock style1%}
+    </head>
+
+    <body class="index_body">
+        <div class="body2">
+            <!-- +++++++++++++++++++++++++++++++++++++++顶部框架++++++++++++++++++++++++++++++++++++++++++++++ -->
+            <div class="web_name"><a href="/HS_server"> HS Tools </a></div>
+            <div class="top">
+                <img class="avatar" src="{% static 'HS_server/images/myavatar.jpg' %}" alt="" width=40 height=40>
+                <div class="user">
+                    <div><em>{{ user_name }}</em></div>
+                    <div><em>{{ user_sign }}</em></div>
+                </div>
+                <div class="login">
+                    <ul>
+                        <li><a href='{{ login_link }}'>{{ login_button }}</a></li><!-- target="_blank" -->
+                        <li><a href="/login/setting">设置</a></li>
+                        <li><a href="/login/help">帮助</a></li>
+                        <li><a href="/HS_server/document/download_module?id=66">下载客户端</a></li>
+                    </ul>
+                </div>
+            </div>
+            <!-- +++++++++++++++++++++++++++++++++++++++友情链接++++++++++++++++++++++++++++++++++++++++++++++ -->
+            <div class="friendly_link"> 
+                <ul>
+                    <li ><a href="https://manufacturing.apple.com" target="_blank">insight</a></li>
+                    <li ><a href="https://17.113.148.183/ghDS" target="_blank" >GroundHog</a></li>
+                    <li ><a href="https://account.appleconnect.apple.com" target="_blank">appleconnect</a></li>
+                    <li ><a href="http://10.54.2.63/jsit/Login.aspx?Page=out" target="_blank">立讯智造</a></li>
+                    <li ><a href="https://jsmail.luxshare-ict.com/" target="_blank">outlook</a></li>
+                    <li ><a href="http://10.54.2.63/jsit/iomonitor.aspx" target="_blank">Query</a></li>
+                    <li ><a href="https://chirp.apple.com/problem/75554176?queryid=search" target="_blank">雷达</a></li>
+                    <li ><a href="http://10.56.254.152/groundhog/" target="_blank">查治具IP</a></li>
+                    <li ><a href="http://jsfaq.luxshare-ict.com/translate" target="_blank">立讯翻译</a></li>
+                </ul>
+            </div>
+            {%block content1%}
+                define you content here
+            {%endblock content1%}
+    </div>
+    {%block script1%}
+    {%endblock script1%}
+</body>

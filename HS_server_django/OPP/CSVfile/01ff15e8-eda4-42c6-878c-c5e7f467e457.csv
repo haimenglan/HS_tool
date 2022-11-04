@@ -1,0 +1,27 @@
+﻿abc,,,,,,,,,Parametric,,,,
+Site,SerialNumber,config,Special Build Description,StartTime,EndTime,Station ID,Version,Test Pass/Fail Status,AC_CP,Force,Cap2,Cap3,Cap4
+NA,,,,,,,,,NA,NA,NA,NA,NA
+NA,,,,,,,,,NA,NA,NA,NA,NA
+upper,,,,,,,,,40,0.3,40,40,40
+lower,,,,,,,,,8,0.1,8,8,8
+unit,,,,,,,,,cp,N,cp,cp,cp
+ITJS,SN1,LWx,config1,2022/4/20 18:33,2022/4/20 18:33,ABCD_EFGHI_station1,1.5.0,pass,5,0.21,5,5,5
+ITJS,SN1,LWx,config2,2022/4/21 18:33,2022/4/21 18:33,ABCD_EFGHI_station1,1.5.0,pass,7,0.21,7,7,7
+ITJS,SN3,LWx,config3,2022/4/22 18:33,2022/4/22 18:33,ABCD_EFGHIJ_station3,1.5.0,pass,10,0.21,10,10,10
+ITJS,SN3,LWx,config4,2022/4/23 18:33,2022/4/23 18:33,ABCD_EFGHIJ_station3,1.5.0,pass,8,0.21,8,8,8
+ITJS,SN5,LWx,config5,2022/4/24 18:33,2022/4/24 18:33,ABCD_EFGH_station5,1.5.0,pass,9,0.21,9,9,9
+ITJS,SN5,LWx,config6,2022/4/25 18:33,2022/4/25 18:33,ABCD_EFGH_station5,1.5.0,pass,20,0.21,20,20,20
+ITJS,SN7,LWx,config7,2022/4/26 18:33,2022/4/26 18:33,ABCD_EFGH_station7,1.5.0,pass,21,0.21,21,21,21
+ITJS,SN7,LWx,config8,2022/4/27 18:33,2022/4/27 18:33,ABCD_EFGH_station7,1.5.0,pass,13,0.21,13,13,13
+ITJS,SN9,LWx,config9,2022/4/28 18:33,2022/4/28 18:33,station10,1.5.0,pass,15,0.21,15,15,15
+ITJS,SN9,LWx,config10,2022/4/29 18:33,2022/4/29 18:33,station10,1.5.0,pass,12,0.21,12,12,12
+ITJS,SN12,LWx,config11,2022/4/30 18:33,2022/4/30 18:33,station11,1.5.0,pass,17,0.21,17,17,17
+ITJS,SN12,LWx,config12,2022/5/1 18:33,2022/5/1 18:33,station12,1.5.0,pass,12,0.21,12,12,12
+ITJS,SN12,LWx,config13,2022/5/2 18:33,2022/5/2 18:33,station13,1.5.0,pass,13,0.21,13,13,13
+ITJS,SN14,LWx,config14,2022/5/3 18:33,2022/5/3 18:33,station14,1.5.0,pass,12,0.21,12,12,12
+ITJS,SN14,LWx,config15,2022/5/4 18:33,2022/5/4 18:33,station15,1.5.0,pass,16,0.21,16,16,16
+ITJS,SN16,LWx,config16,2022/5/5 18:33,2022/5/5 18:33,station16,1.5.0,pass,18,0.21,18,18,18
+ITJS,SN16,LWx,config17,2022/5/6 18:33,2022/5/6 18:33,station17,1.5.0,pass,22,0.21,22,22,22
+ITJS,SN18,LWx,config18,2022/5/7 18:33,2022/5/7 18:33,station18,1.5.0,pass,31,0.21,31,31,31
+ITJS,SN18,LWx,config19,2022/5/8 18:33,2022/5/8 18:33,station19,1.5.0,pass,21,0.21,21,21,21
+ITJS,SN20,LWx,config20,2022/5/9 18:33,2022/5/9 18:33,station20,1.5.0,pass,3,0.21,3,3,3

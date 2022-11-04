@@ -1,0 +1,377 @@
+.{%extends 'HS_server/HS_server_top.html'%}
+    {%block style1%}
+        <style type="text/css"> 
+            /*-------------------- 文件选择区域 ----------------------------*/
+            .file_region{
+                background: rgb(50,50,50);
+                color: white;
+                margin-top: 2px;
+                height:35px;
+                line-height: 35px;
+
+            }
+            .file_region #OPP_file{
+                float: left;
+            }
+            .file_region .choose_file{
+                width:240px;
+                margin-left: 5px;
+            }
+
+
+
+
+             /*-------------------- 测试项列表区域 ----------------------------*/
+            .item_region{
+                float: left;
+                height:100%;
+            }
+            .item_region .item_list{
+                width:300px;
+                height:400px;
+                padding: 5px;
+                margin-top: 2px;
+                border-radius: 5px;
+                background: rgb(44,44,44);
+                color:white;
+                font-size: 12px;
+            }
+            .item_region .item_list .file_path{
+                font-size: 18px;
+                margin-top: 2px;
+                margin-left: 2px;
+                height:40px;
+                overflow: auto;
+            }
+            .item_region .item_list .title{
+                font-size: 12px;
+                padding: 5px;
+            }
+            .item_region ul{
+                width:300px;
+                height:300px;
+                margin: 0px;
+                margin-top: 5px;
+                padding: 0px;
+                list-style-type: none;
+                overflow: auto;
+            }
+            .item_region li{
+                margin-top: 1px;
+            }
+            .item_region li span{
+                width:18px;
+                height:18px;
+                line-height: 20px;
+                margin-left: 2px;
+                border-radius: 2px;
+                font-size: 12px;
+                text-align: center;
+                display: inline-block;
+                background: orange;
+            }
+            .item_region li:hover{
+                cursor: pointer;
+                color: rgb(80, 150, 240);
+            }
+             /*-------------------- 图表变量区域 ----------------------------*/
+            .item_region .factor_list{
+                width:300px;
+                height:300px;
+                margin-top: 5px;
+                padding: 5px;
+                /*border: solid 1px;*/
+                border-radius: 5px;
+                border-radius: 5px;
+                background: rgb(60,60,60);
+                color: white;
+                font-size: 12px;
+            }
+            .item_region .factor_list ul{
+                width:300px;
+                height:290px;
+                overflow: auto;
+            }
+            .item_region .factor_list li span{
+                background: rgb(80,153,220);
+            }
+            .item_region .factor_list li:hover{
+                color: rgb(80, 220, 150);
+            }
+            .item_region .factor_list .title{
+                font-size: 12px;
+                padding: 5px;
+            }
+
+             /*-------------------- 图片显示区域 ----------------------------*/
+            .image_region{
+                float: left;
+                width: calc(100% - 320px);
+                height:100%;
+                margin-left: 10px;
+                margin-top: 2px;
+                /*background: blue;*/
+                display: inline-block;
+            }
+            .image_info{
+                width:calc(100% - 10px);
+                background: rgb(220,220,220);
+                float: left;
+                padding: 5px;
+                border-radius: 5px;
+            }
+            .image_info .image_select span{
+                width:100px;
+            }
+            .image_info select{
+                width:130px;
+            }
+
+            .plot_button{
+                display: inline-block;
+                width:50px;
+                height:25px;
+                line-height: 25px;
+                margin-left: 10px;
+                text-align: center;
+                background: rgb(247,188,94);
+                border-radius: 10px;
+                font-weight: bold;
+                font-size: 14px;
+            }
+            .plot_button:hover{
+                background-color:  rgb(97,202,84);
+                cursor: pointer;
+            }
+
+
+            .image_info .image_item{
+                height:30px;
+                line-height: 30px;
+                margin-top: 5px;
+            }
+            .image_info .image_item .title{
+                width:60px;
+                height:30px;
+                line-height: 30px;
+                /*display: inline-block;*/
+                float: left;
+            }
+            .image_info .image_item .content{
+                width:1000px;
+                height:30px;
+                line-height: 30px;
+                /*border: solid 1px;*/
+                border-radius: 5px;
+                background: rgb(250,250,250);
+                /*display: inline-block;*/
+                float:left;
+            }
+            .image_info .image_item b{
+                margin-left: 10px;
+            }
+            .image_info .image_factor{
+                margin-top: 2px;
+                height:28px;
+                line-height: 30px;
+            }
+            .image_info .image_factor .title{
+                width:60px;
+                height:30px;
+                line-height: 30px;
+                /*display: inline-block;*/
+                float:left;
+            }
+            .image_info .image_factor .content{
+                width:1000px;
+                height:30px;
+                line-height: 30px;
+                padding-left: 2px;
+                /*border: solid 1px;*/
+                border-radius: 5px;
+                background: rgb(240,240,240);
+                /*display: inline-block;*/
+                float:left;
+                overflow: auto;
+            }
+            .image_info .image_factor b{
+                margin-left: 2px;
+                background: rgb(93,163,232)
+            }
+            .image_info .image_factor em{
+                margin-right: 3px;
+                background: rgb(237,110,87);
+                color: white;
+            }
+            .image_info .image_factor em:hover{
+                background: red;
+                cursor: pointer;
+            }
+
+            .image_region .image{
+                width: 100%;
+                height:100%;
+                margin-left: 2px;
+                margin-top: 10px;
+            }
+            .image_region .waiting_load{
+                width: 500px;
+                height: 500px;
+                text-align: center;
+                line-height: 500px;
+                margin-left: 2px;
+                margin-top: 10px;
+            }
+
+        </style>
+    {%endblock style1%}
+
+    {%block content1%}
+        <!-- -------------------- 文件选择区域 ---------------------------- -->
+        <div class='file_region'>
+            <form action="submit_csvfile" id="OPP_file" name="OPP_file2" method="post" enctype="multipart/form-data">
+                <input class="choose_file" type="file" name="insight_csv_file">
+                <input class="submit_button" type="submit" name="submit" value="submit">
+                <input class='file_name_input' style="display: none" type="text" name="file_path" value="">
+                <label class="response_file_name"  style="display:none">{{response_file_name}}</label>
+            </form>
+        </div>
+        <!-- -------------------- 测试项列表区域 ---------------------------- -->
+        <div class="item_region">
+            <div class='item_list'>
+                <div class="file_path">{{file_path}}</div>
+                <div class="title"> Item List </div>
+                <ul>
+                    <!-- <li> <span>1 </span> AC_CP </li>
+                    <li> <span>2 </span> Crown_force </li> -->
+                    {%for item in item_list%}
+                        <li> <span>{{forloop.counter}}</span> <em class="name">{{item}} </em> </li>
+                    {%endfor%}
+                </ul>
+            </div>
+            <div class="factor_list">
+                <div class = title> Factor List </div>
+                <ul>
+                    <!-- <li> <span>1 </span> Serial Number </li>
+                    <li> <span>2 </span> Station ID </li> -->
+                    {%for factor in factor_list%}
+                        <li> <span>{{forloop.counter}}</span> <em class="name">{{factor}}</em> </li>
+                    {%endfor%}
+                </ul>
+            </div>
+        </div>
+        <!-- -------------------- 图片显示区域 ---------------------------- -->
+        <div class = "image_region">
+            <!-- -------------------- 图片信息区域 ---------------------------- -->
+            <div class="image_info">
+                <div class="image_select">
+                    <span>ImageType:</span>
+                    <select name="image_type" class="image_type">
+                        <option value="scater">scater</option>
+                        <option value="box">box</option>
+                    </select>
+                    <span>HighLight:</span>
+                    <select name="image_highlight" class="image_highlight">
+                        <option value="">None</option>
+                    </select>
+                    <div class="plot_button">
+                        plot
+                    </div>
+                </div>
+
+                <div class="image_item">
+                    <span class="title"> Item: </span> 
+                    <span class="content"> 
+                        <b>{{first_item}}</b>
+                    </span>
+                </div>
+                <div class="image_factor">
+                    <span class="title"> Factor: </span> 
+                    <span class="content">
+                        <!-- <b> Serial Number</b><em>X</em>
+                        <b> Station ID</b><em>X</em> -->
+                    </span>
+                </div>
+            </div>
+
+            <div>
+                <img class="image" style="display:none" src="/Users/js-15400155/Desktop/picture.png">
+                <div class="waiting_load" style="display:none">正在加载，请等待...</div>
+            </div>
+        </div>
+    {%endblock content1%}
+
+    {%block script1%}
+    <script language="javascript">
+        $(function(){
+            $("#OPP_file").submit(function(event){
+                path = $(".choose_file").val()
+                if(path==""){
+                    alert("choose the file first")
+                    event.preventDefault();//阻止默认的表单提交
+                }else{
+                    $('.file_region .file_name_input').prop({value:path})
+                }
+            })
+        });
+
+        $(".item_region .item_list").delegate(".name", "click", function(event){
+            index = $(".item_region .item_list .name").index(this)
+            item = $(this).html()
+            // alert(item)
+            $(".image_region .image_item b").html(item)
+        });
+
+        $(".item_region .factor_list").delegate(".name", "click", function(event){
+            index = $(".item_region .factor_list .name").index(this)
+            factor = $(this).html()
+            // alert(item)
+            $(".image_region .image_factor .content").append($("<b>"+ factor+" </b><em>×</em>"))
+            $(".image_region .image_highlight").append($("<option value='" +factor+ "'>"+factor+"</option>"))
+        });
+
+        $(".image_region .image_factor .content").delegate("em","click",function(){
+            index = $(".image_region .image_factor .content em").index(this)
+            $($(".image_region .image_factor .content b")[index]).remove()
+            $($(".image_region .image_highlight option")[index]).remove()
+            $(this).remove()
+        });
+
+        $(".image_info .plot_button").click(function(){
+            path = $(".choose_file").val();
+            item = $(".image_region .image_item b").html();
+            factor_list = new Array();
+            if(item==""){
+                alert("chose file/item first")
+            }else{
+                $(".image_region .image_factor b").each(function(i){
+                    factor_list.push($(this).html())
+                })
+                factor = factor_list.join(";")
+                file_name = $(".file_region .response_file_name").html()
+                image_type = $(".image_select .image_type").val()
+                image_highlight = $(".image_select .image_highlight").val()
+                $(".image_region .waiting_load").show()
+                $.ajax({
+                    url:"generate_picture",
+                    type:"post",
+                    data:{"item":item, "factor":factor, "file_name":file_name, "image_type":image_type,
+                          "image_highlight": image_highlight
+                         },
+                    dataType:"json",
+                    success:function(data){
+                        // alert("收到图片数据",data)
+                        if(data["result"]==true){
+                            $(".image_region .image").prop({src:data["src"]})
+                            $(".image_region .waiting_load").hide()
+                            $(".image_region .image").show()
+                        }else{
+                            alert(data["info"])
+                        }
+                    }
+                })
+            }
+        });
+
+    </script>
+    {%endblock script1%}

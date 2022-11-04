@@ -1,0 +1,27 @@
+{%extends 'HS_server/HS_server_top.html'%}
+{% load static %}
+    {%block style1%}
+        <style type="text/css"> 
+            .wallpaper{
+                margin:20px;
+            }
+
+        </style>
+    {%endblock style1%}
+
+    {%block content1%}
+        <!-- <a href="add_image"> add_image</a> -->
+        <div class="picture_show">
+            {% for each_img in img_list %}
+                <a href='show_detail/{{each_img.id}}'><img class="wallpaper" src="{% static ''%}{{each_img.path}}" alt="{{each_img.name}}" width=150 height=100></a>
+            {% endfor %}
+        </div>
+
+    {%endblock content1%}
+
+    {%block script1%}
+    <script language="javascript">
+
+
+    </script>
+    {%endblock script1%}

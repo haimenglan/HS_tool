@@ -1,0 +1,31 @@
+
+{% load static %}
+<script type="text/javascript">
+    $(function(){  //页面加载后运行
+        var $option_btn = $('.button li');
+        var $result = $('.result .sheet');
+        $($result[0]).show().siblings().hide();
+        $option_btn.click(function(){
+            $(this).addClass("current_option").siblings().removeClass("current_option");
+            $($result[$option_btn.index(this)]).show().siblings().hide();
+        });
+    })
+</script>
+<div>运行结果：</div>
+<div class="download">
+    <a href="download_daily_result?file_name={{ file_name }}" download="daily_report_result.xls">下载结果</a>
+</div>
+<!-- 创建按钮: -->
+<div class="button clearfix">
+    <ul>
+        <!-- <li onclick="click_button('daily_result')" class="li"> daily报告 </li> -->
+        {{ option_button|safe }}
+    </ul>
+</div>
+<div class="result">
+    {{ option_result|safe }}
+</div>
+
+
+
+

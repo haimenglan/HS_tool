@@ -1,0 +1,428 @@
+{%extends 'HS_server/HS_server_top.html'%}
+    {%block style1%}
+        <style type="text/css">
+            .doc_top{
+                height: 30px;
+                width:100%;
+                line-height: 30px;
+                background-color: rgb(80,80,80);
+                color: rgb(241,157,56);
+                text-align:left;
+            }
+            .doc_top .python_doc{
+                color: white;
+                margin-left: 20px;
+                margin-right: 5px
+            }
+            .doc_top .health_sensing,.english,.HWTE_Station{
+                color: white;
+                margin-left: 5px;
+                margin-right: 5px
+            }
+            .doc_top .health_sensing:hover{
+                color: gold;
+                cursor: pointer;
+            }
+            .doc_top .english:hover{
+                color: gold;
+                cursor: pointer;
+            }
+            .doc_top .python_doc:hover{
+                color: gold;
+                cursor: pointer;
+            }
+            .doc_top .HWTE_Station:hover{
+                color: gold;
+                cursor: pointer;
+            }
+            .doc_top .download_module{
+                position: absolute;
+                right: 20px;
+                color: white;
+            }
+            .doc_top .download_module:hover{
+                cursor: pointer;
+                color: gold;
+            }
+            .doc_title{
+                height: 30px;
+                line-height: 30px;
+                margin:0px;
+                text-align: center;
+                font-size: 20px;
+                background-color: rgb(20,20,20);
+                color: orange;
+            }
+
+            .doc_list{
+                float: left;
+                background: rgb(220,220,220);
+                height: calc(100% - 40px);
+                width: 160px;
+                overflow: auto;
+                padding: 20px;
+                
+            }
+            .doc_list ul{
+                list-style-type: none;
+                margin: 0px;
+                padding: 0px;
+                text-align: left;
+            }
+            .doc_list ul span{
+                float: left;
+                margin-right: 10px;
+            }
+            .doc_list ul li{
+                margin-bottom: 10px;
+                color:rgb(20,20,40);
+                font-size: 14px;
+                border-bottom: 1px;
+                border-bottom-style: dashed;
+                /*float: left;*/
+                display: inline-block;
+            }
+            .doc_list li:hover{
+                color: rgb(240,153,55);
+                cursor: pointer;
+            }
+
+            #pdf_frame, .loading{
+                float: left;
+                height:100%;
+                width: calc(100% - 204px);  /*默认border-width=2*/
+                display: none;
+            }
+            .loading{
+                text-align: center;
+                margin-top: 400px;
+            }
+
+            .left{
+                float: left;
+                height: 100%;
+                width:calc(100% - 200px);
+                overflow: auto;
+                font-size:0px;
+            }
+
+            .left .index{
+                float: left;
+                font-size: 14px;
+                height: calc(100% - 40px);
+                width:200px;
+                padding: 20px;
+                background-color: rgb(240,240,240);
+                overflow: auto;
+                /*white-space:nowrap;*/
+                text-align: left;
+            }
+
+            .left .index a{
+                text-decoration-line: none;
+                display: block;
+                color: black;
+            }
+            .left .index a:hover{
+                color: blue;
+            }
+
+            .left .content{
+                float: left;
+                height: calc(100% - 40px);
+                width: calc(100% - 281px);;
+                border-left: dashed 1px;
+                padding: 20px;
+                font-size: 14px;
+                overflow: auto;
+            }
+            .left .content img{
+                max-width: 700px;
+                max-height: 700px;
+            }
+            .right{
+                display: none;
+                position: absolute;
+                right: 0px;
+                top: 190px;   
+                height: 100%;
+                width: 150px;
+                background-color: rgb(140,140,140);
+                overflow: auto;
+            }
+            .module_list{
+                list-style-type: none;
+                margin: 0px;
+                padding: 0px;
+            }
+            .module_list li{
+                padding-left: 10px;
+                margin-bottom: 5px;
+                color:rgb(20,20,40);
+                padding-bottom: 4px;
+                border-bottom: 1px;
+                border-bottom-style: dashed;
+                border-color: white;
+            }
+            .module_list li a{
+                text-decoration: none;
+                color: yellow;
+                font-size: 14px;
+                /*text-align: left;*/
+            }
+            .module_list li a:hover{
+                color: blue;
+                cursor: pointer;
+            }
+        </style>
+    {%endblock style1%}
+
+    {%block content1%}
+        <div class="doc_top">
+            <span class="python_doc">
+                python
+            </span>
+            <strong>
+                |
+            </strong>
+            <span class="english">
+                English
+            </span>
+            <strong>
+                |
+            </strong>
+            <span class="health_sensing">
+                HealthSensing
+            </span>
+            <strong>
+                |
+            </strong>
+            <span class="HWTE_Station">
+                HWTE Station
+            </span>
+            <b class="download_module">
+                下载模块
+            </b>
+        </div>
+        <div class="doc_title">
+        </div>
+        <div class="doc_list">
+            <!-- <h2>资料目录</h2> -->
+            <ul>
+                {% for each_doc in doc_list %}
+                <li><em style="display:none">{{each_doc.id}}</em><span>{{forloop.counter}}</span><i class="doc_name">{{each_doc.name}}</i></li> <!-- {{each_doc.format}} -->
+                {% endfor %}
+            </ul>
+            <!-- <ul class="health_sensing" style="display: none;">
+                {% for each_doc in health_sensing_list %}
+                <span style="display:none">{{each_doc.id}}</span><li>{{each_doc.name}}{{each_doc.format}}</li>
+                {% endfor %}
+            </ul> -->
+        </div>
+        <div class="loading" style="display: none;">
+            正在加载...
+        </div>
+        <div class="left">
+            <div class= "index">
+
+            </div>
+            <div class="content">
+
+            </div>
+        </div>
+
+        <iframe src="" id="pdf_frame">
+
+        </iframe>
+
+        <div class ="right">
+            <ul class="module_list">
+                {% for each_module in module_list %}
+                <span style="display:none">{{each_module.id}}</span>
+                <li>
+                    <a href="download_module?id={{each_module.id}}">{{each_module.name}}
+                    </a>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    {%endblock content1%}
+
+    {%block script1%}
+        <script language="javascript">
+            // $screen_width = window.screen.width
+            // $screen_height = window.screen.height
+            $screen_width = $(window).width();
+            $screen_height = $(window).height();
+            $doc_type_global = "python_doc"
+            $chapter_global = ''
+            var $doc_id_global, $doc_name_global
+            // $is_show_right = 0
+            $(".doc_top .download_module").click(function(){
+                $(".right").toggle()
+                // if($is_show_right==0){
+                //     $(".right").show()
+                //     $is_show_right = 1
+                // }else{
+                //     $(".right").hide()
+                //     $is_show_right = 0
+                // }
+            })
+            
+            $(function(){
+                $(window).resize(function(){
+                    $screen_width = $(window).width();
+                    $screen_height = $(window).height();
+                    $("#pdf_frame").prop({width:$screen_width-210, height:$screen_height-40})
+                })
+            });
+
+            // 获取文档列表
+            !(function(){
+                $(".doc_top").delegate("span", "click", function(event){
+                    index = $(".doc_top span").index(this);
+                    $doc_type_global = $(this).prop("class")
+                    $.ajax({
+                        url: "get_doc_list",
+                        type: "get",
+                        data: {"doc_type":$doc_type_global},
+                        dataType: "json",
+                        success:function(data){
+                            $(".doc_list ul").html("")
+                            for(i=1;i<data["doc_list"].length+1;i++){
+                                // doc = $("<em style='display:none'>"+data["doc_id"][i-1]+"</em>"+"<span>"+i+"</span>"+"<li>"+data["doc_list"][i-1]+"</li>")
+                                doc = $("<li> <em style='display:none'>"+data["doc_id"][i-1]+"</em><span>"+i+"</span><i class='doc_name'>"+data["doc_list"][i-1]+"</i></li>")
+                                $(".doc_list ul").append(doc)
+                            }
+                        }
+                    })
+                })
+            })();
+
+            // 将当前页面状态添加到历史记录
+            function change_history(){
+                title = $doc_type_global + "," + $doc_id_global
+                url =  "/HS_server/document/" + $doc_type_global +"/"+$doc_id_global+"/"+$doc_name_global+"/"
+                // if(chapter!=''){ url = url + chapter }
+                var state = {
+                    "title": title,
+                    "url": url,
+                };
+                history.replaceState(state, $doc_name_global, url)
+            }
+
+            function push_history(){
+                // 将当前页面状态添加到历史记录, 参数是状态信息，页面标题，要跳转的URL地址
+                // state 是保存到历史记录的信息，必须包含标题和连接，且只有和两个可以保存dom信息
+                // 每一次点击回退，都可以通过history.state获取保存的状态信息
+                title = $doc_type_global + "," + $doc_id_global
+                var state = {
+                    "title": title,// 只有title和url可以传dom参数
+                    "url": window.location.pathname,// 当前的地址
+                };
+                window.history.pushState(state, document.title, window.location.pathname);
+            }
+            // 点击文档目录
+            function bind_click_index_event(){
+                $(".left .index a").click(function(){
+                    chapter = $(this).attr('href') // text/part0000.html
+                    $chapter_global = $(this).attr('href')
+                    push_history()  // 必须先把当前地址写进历史，再下一步改变地址，否则无效
+                    change_history()
+                    if(chapter[0]!="#"){
+                        event.preventDefault();
+                        // page = $(".left .index a").index(this)
+                        index = $(".left .index a").index(this)
+                        page = $(".left .index em").eq(index).html()
+                        get_doc_content(parseInt(page)+1)
+                    }
+                })
+            }
+
+            function show_title(doc_id){
+                $.each($(".doc_list ul span"),
+                    function(index, current_item){
+                        if($(".doc_list ul em").eq(index).html()==doc_id){
+                            $(".doc_title").html($(".doc_list ul i").eq(index).html())
+                        }
+                    }
+                )
+            }
+
+            function get_doc_content(page, show_title_flag=0){
+                // 显示标题
+                if(show_title_flag==1){show_title($doc_id_global)}
+                // 请求资料内容并显示
+                $.ajax({
+                    // url: "/HS_server/python_doc/get_content.py", //绝对路径
+                    url: "get_content.py",// 相对路径
+                    type: "get",
+                    data: {"bookID": $doc_id_global, "bookTable":$doc_type_global, 'page':page, "request":"content"},
+                    dataType: "json",
+                    success:function(data){
+                        // alert("收到内容")
+                        $(".loading").hide()
+                        if(data["file_type"]=="pdf"||data["file_type"]=="html"){
+                            $(".left").hide()
+                            $("#pdf_frame").show()
+                            $("#pdf_frame").prop({width:$screen_width-210, height:$screen_height-40, src:data["link"]})
+                            // window.open(data["link"]) 新窗口打开
+                        }else{
+                            $(".left").show()
+                            $("#pdf_frame").hide()
+                            $(".left .content").html("")
+                            $(".left .content").html(data["book_content"]);
+                            $.ajax({
+                                url: "get_index.py",// 相对路径
+                                type: "get",
+                                data: {"bookID": $doc_id_global, "bookTable":$doc_type_global, "request":"index"},
+                                dataType: "json",
+                                success:function(data){
+                                    $(".left .index").html("")
+                                    if(data['index'].length>0){
+                                        chapter = data['index'][0][0][0]
+                                        for(i=0;i<(data['index'].length);i++){
+                                            // $("<em style='display:none'>"
+                                            for(j=0;j<(data['index'][i].length);j++){
+                                                chapter_now = $('<a href="' +data["index"][i][j][0]+ '">'+data["index"][i][j][1]+'</a>'+'<em style="display:none">'+i+'</em>')
+                                                $(".left .index").append(chapter_now)
+                                            }
+                                        }
+                                    }
+                                    bind_click_index_event()
+                                }
+                            })
+                            change_history()
+                        }
+                    }
+                })
+            }
+
+            window.addEventListener('popstate', function(e){
+                // 浏览器点击返回
+                if (history.state){
+                    var state = e.state;
+                    //do something(state.url, state.title);
+                    title = state.title
+                    title_l = title.split(",")
+                    $doc_type_global = title_l[0]
+                    $doc_id_global = title_l[1]
+                    get_doc_content(1, 1) // 获取第一章并且显示标题
+                }
+            }, false);
+
+            $(".doc_list ul").delegate("li", "click", function(event){
+                // event.preventDefault();
+                $index = $(".doc_list ul li").index(this)
+                $doc_id_global = $(".doc_list ul em").eq($index).html()
+                $doc_name_global = $(".doc_list ul i").eq($index).html()
+                // 显示加载界面
+                $(".doc_title").html($(".doc_list ul li").eq($index).html())
+                $(".loading").show().next().hide().next().hide()
+                push_history()
+                // 改变当前页面的状态/链接
+                change_history()
+                get_doc_content(1)
+            })
+        </script>
+    {%endblock script1%}

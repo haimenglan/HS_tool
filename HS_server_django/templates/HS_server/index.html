@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+    <head>  
+        <meta charset="UTF-8">
+        <meta http-equiv="Expires" content="0"> <!-- 阻止浏览器缓存 -->
+        <meta http-equiv="Pragma" content="no-cache">
+        <meta http-equiv="Cache-control" content="no-cache">
+        <meta http-equiv="Cache" content="no-cache">
+        <meta name="viewport" content="width=device-width, user-scalable=yes, initial-scale=1, maximum-scale=0.8, minimum-scale=0.8">
+        <link rel="stylesheet" type="text/css" href="{% static 'HS_server/index.css' %}?v=202203180003"><!-- 版本号需要写在中括号外面，否则Django会把问号和等于号转义 -->
+        <script type="text/javascript", src="{% static 'HS_server/jquery-1.11.3/jquery.min.js' %}"></script>
+    </head>
+
+    <body class="index_body">
+        <div class="body2">
+            <!-- +++++++++++++++++++++++++++++++++++++++顶部框架++++++++++++++++++++++++++++++++++++++++++++++ -->
+            <div class="web_name">HS Tools</div>
+            <div class="top">
+                <img class="avatar" src="{% static 'HS_server/images/myavatar.jpg' %}" alt="用户头像" width=40 height=40>
+                <div class="user">
+                    <div><em>{{ user_name }}</em></div>
+                    <div><em>{{ user_sign }}</em></div>
+                </div>
+                <div class="login">
+                    <ul>
+                        <li><a href='{{ login_link }}'>{{ login_button }}</a></li><!-- target="_blank" -->
+                        <li><a href="/login/setting">设置</a></li>
+                        <li><a href="/help">帮助</a></li>
+                        <li><a href="/HS_server/document/download_module?id=35">下载客户端</a></li> <!-- 66 -->
+                    </ul>
+                </div>
+            </div>
+            <!-- +++++++++++++++++++++++++++++++++++++++友情链接++++++++++++++++++++++++++++++++++++++++++++++ -->
+            <div class="friendly_link"> 
+                <ul>
+                    <li ><a href="https://manufacturing.apple.com" target="_blank">insight</a></li>
+                    <li ><a href="https://17.113.148.183/ghDS" target="_blank" >GroundHog</a></li>
+                    <li ><a href="https://account.appleconnect.apple.com" target="_blank">appleconnect</a></li>
+                    <li ><a href="http://10.54.2.63/jsit/Login.aspx?Page=out" target="_blank">立讯智造</a></li>
+                    <li ><a href="https://jsmail.luxshare-ict.com/" target="_blank">outlook</a></li>
+                    <li ><a href="http://10.54.2.63/jsit/iomonitor.aspx" target="_blank">Query</a></li>
+                    <li ><a href="https://chirp.apple.com/problem/75554176?queryid=search" target="_blank">雷达</a></li>
+                    <li ><a href="http://10.56.254.152/groundhog/" target="_blank">查治具IP</a></li>
+                    <li ><a href="http://jsfaq.luxshare-ict.com/translate" target="_blank">立讯翻译</a></li>
+                </ul>
+            </div>
+            <!-- +++++++++++++++++++++++++++++++++++++++工具++++++++++++++++++++++++++++++++++++++++++++++ -->
+            <div class="tools">
+                <!-- +++++++++++++++++++++++++++++++++++++++左侧列表++++++++++++++++++++++++++++++++++++++++++++++ -->
+                <div class="left">
+                    <div>{{ tool_list }}</div>
+                    <div class="tool_item">
+                        <img class="tool_picture" src="{% static 'HS_server/images/daily_report.png' %}" alt="daily图片" width=30 height=30>
+                        <a class="link">Daily</a>
+                    </div>
+                    <div class="tool_item">
+                        <img class="tool_picture" src="{% static 'HS_server/images/opp_grr.png' %}" alt="OPP图片" width=30 height=30>
+                        <a class="link" href="/OPP">OPP</a>
+                    </div>
+                    <div class="tool_item">
+                        <img class="tool_picture" src="{% static 'HS_server/images/overlay_foms.png' %}" alt="FOM对比图片" width=30 height=30>
+                        <a class="link">FOM</a>
+                    </div>
+                    <div class="tool_item">
+                        <img class="tool_picture" src="{% static 'HS_server/images/notes.jpg' %}" alt="小说图片" width=30 height=30>
+                        <a class="link">小说</a>
+                    </div>
+                    <div class="tool_item">
+                        <img class="tool_picture" src="{% static 'HS_server/images/python.png' %}" alt="python资料图片" width=30 height=30>
+                        <a class="link" href="/HS_server/document"  target="_self">文档</a>  <!-- target="_blank" -->
+                    </div>
+                    <div class="tool_item">
+                        <img class="tool_picture" src="{% static 'HS_server/images/picture.png' %}" alt="壁纸图片" width=30 height=30>
+                        <a href="/picture" class="link">图片</a>
+                    </div>
+                    <div class="tool_item">
+                        <img class="tool_picture" src="{% static 'HS_server/images/chat.png' %}" alt="聊天图片" width=30 height=30>
+                        <a class="link" href="/data_update">更新数据</a>
+                    </div>
+                </div>
+
+                <!-- +++++++++++++++++++++++++++++++++++++++主页++++++++++++++++++++++++++++++++++++++++++++++ -->
+                <div class="main">
+                    <!-- 遮罩 -->
+                    <div class="shading" style="display:none"> 
+                        <div class="message" style="display:none"></div>
+                    </div> 
+                    <!-- daily | FOM结果 -->
+                    <div class="daily" style="display: none"></div>
+                    <div class="FOM" style="display: none"></div>
+                    <!-- 小说 -->
+                    <div class="book" style="display: none">
+                        <div class='title2'>
+                            <span class='title'> </span>
+                            <span class="download" style="display: none">下载本书</span>
+                        </div> 
+                        <div class='book_content'></div>
+                        <div class="setting">
+                            <h6>主题</h6>
+                            <p class="theme1">1</p><p class="theme2">2</p><p class="theme3">3</p><p class="theme4">4</p> 
+                            <h6>字体</h6>
+                            <div class="font">大</div> <div class="font">小</div>
+                        </div>
+                        <div class='bookPageList'></div>
+                        <!--<div class="fullScreen">全屏</div> -->
+                        <div class="input_password" style="display: none">
+                            <div class="label">输入密码</div>
+                            <input class="input_password_frame" type='text' name='password'>
+                            <div class="confirm">确认</div>
+                        </div>
+                        <div class="setButton">阅读设置</div>
+                    </div>
+                </div>
+
+                <!-- +++++++++++++++++++++++++++++++++++++++右侧列表++++++++++++++++++++++++++++++++++++++++++++++ -->
+                <div class="right">
+                    <!-- +++++++++++++++++++++++++++++++++++++++daily++++++++++++++++++++++++++++++++++++++++++++++ -->
+                    <div id="dailyID" class="daily">
+                        <div class="title">Daily report tool</div>
+                        <form action="daily_report.py" id="daily_report_tool" name="daily_report_tool" method="post" enctype="multipart/form-data">
+                            <label>选择first result type Unitdetail.csv</label>
+                            <input class="choose_file" type="file" name="unitdetails_file">
+                            <div class="dailyMode">
+                                <label>模式</label><br />
+                                <!-- <input class="checkButton" type="checkbox" name="show empty" value=1> show empty<br /> -->
+                                <input type="checkbox" name="change config" value=1 style="font-size: 12px"> change config<br />
+                                <!-- <input type="checkbox" name="is FBR config" value=1> is FBR config<br /> -->
+                                <input type="checkbox" name="is platinum" value=1 style="font-size: 12px"> is platinum<br />
+                            </div>
+                            <div class="submit">
+                                <input class="button" type="submit" name="submit" value="提交">
+                                <input class="button" type="reset" name="reset" value="重置">
+                            </div>
+                        </form>
+
+                        <!-- +++++++++++++++++++++++++++++++++++++++FOM++++++++++++++++++++++++++++++++++++++++++++++ -->
+                        <div class="title">FOM对比</div>
+                        <form id="FOM_compare_tool" method="post" enctype="multipart/form-data">
+                            <label>old overlay insight export data</label>
+                            <input class="choose_file" type="file" name="old_version_file">
+                            <label>new overlay insight export data</label>
+                            <input class="choose_file" type="file" name="new_version_file">
+                            <div class="submit">
+                                <input class="button" type="submit" name="submit" value="提交">
+                                <input class="button" type="reset" name="reset" value="重置">
+                            </div>
+                        </form>
+                    </div>
+                    <!-- +++++++++++++++++++++++++++++++++++++++小说++++++++++++++++++++++++++++++++++++++++++++++ -->
+                    <div class="note">
+                        <div class='title'> 目录 </div>
+                        <ul class="bookList">
+                        <!--<li><span>1</span><a>书籍1<a></li>
+                            <li><span>2</span><a>书籍2<a></li>
+                            <li><span>20</span><a>书籍2<a></li>-->
+                        </ul>
+                        <ul class="bookPageList">
+                            <!-- <li>上一页</li>
+                            <li class="FirstPage">1</li>
+                            <li>下一页</li> -->
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="others"></div>
+        </div>
+
+
+<!-- +++++++++++++++++++++++++++++++++++++++脚本++++++++++++++++++++++++++++++++++++++++++++++ -->
+        <script language="javascript">
+            //全局变量
+            var current_page_dict = {
+                "currentBookListPage": 1,//小说列表当前页码
+                "currentReadBookPage": 1,//正在阅读的小说的页码
+                "currentPythonDocListPage":1,
+                "currentReadPythonDocPage": 1
+            }
+            var $bookIndex// 从服务器获取的书籍索引
+            var $bookName// 从服务器获取的书籍名字
+            var $bookID
+            var $bookIDList
+
+        // +++++++++++++++++++++++++++++++++++++++ 点击工具链接 ++++++++++++++++++++++++++++++++++++++++++
+            $(function(){ // 修改背景图大小
+                $screen_width = window.screen.width
+                $screen_height = window.screen.height
+                $(".index_body").css("background-size",$screen_width+"px "+$screen_height+"px")
+            })
+            $(function(){
+                var tool_link = $(".left .link");
+                var tool_content = $(".right").children();
+                $(tool_content[0]).show().siblings().hide()
+                // 委托点击左侧链接的事件
+                $(".left").delegate(".link", "click", function(event){
+                    index = $(".left .link").index(this)
+                    // 显示右边框架对应的内容
+                    // if(index!=1 && index!=4 && index!=5 ){ // python工具不显示
+                    //   switch(index)
+                    //   if(index==2){
+                    //     // 显示FOM对比
+                    //     $(tool_content[0]).show().siblings().hide()
+                    //   }else{
+                    //     $(tool_content[index]).show().siblings().hide()
+                    //   }
+                    // }
+                    // 显示主页面对应的内容
+                    switch(index){
+                        // daily
+                        case 0:$(".main .daily").show().siblings().hide(); $(tool_content[0]).show().siblings().hide(); break; 
+                        case 2:$(".main .FOM").show().siblings().hide(); $(tool_content[0]).show().siblings().hide(); break;
+                        // 小说
+                        case 3:$(".main .book").show().siblings().hide();
+                                $(tool_content[1]).show().siblings().hide()
+                                current_page_dict["currentBookListPage"] = 1; 
+                                get_book_list(current_page_dict["currentBookListPage"], 1);
+                                $(".main .book .input_password").hide();
+                                // $(".main .shading").hide()
+                                break;
+                    }
+                });
+            });
+
+            $(".friendly_link").delegate("a", "click", function(event){
+                // event.stopPropagation();
+                // event.preventDefault();
+                switch ($(".friendly_link a").index(this)){
+                    case 1: 
+                            $shading = $(".main .shading");
+                            $message = $(".main .shading .message");
+                            $message.click(function(){return false})
+                            $input = "<div>账号</div> <div> <input type='text' value='ZhenBangHuang'> <a>点我复制</a> <input type='text' value='Zv#Hnsam'> <a>点我复制</a> </div>";
+                            $message.html($input); 
+                            $message.delegate("a", "click", function(event){
+                                $index = $(".main .shading .message a").index(this);
+                                $(".main .shading .message input").eq($index).select();
+                                document.execCommand("copy")
+                                $(".main .shading .message a").eq($index).html("已复制！")
+                                return false;
+                            })
+                            $shading.show();
+                            $message.show()
+                            break;
+                }
+                // return false
+            })
+
+        // +++++++++++++++++++++++++++++++++++++++ 创建页码 ++++++++++++++++++++++++++++++++++++++++++
+            // 创建页码函数
+            function create_page(total_page, max_show, pageObj){
+                // 此函数用于在pageObj div里面创建页码
+                // max_show 至少要大于3，才能在两个省略号中间还有一个数
+                // $(pageObj).html("")//清空里面的内容
+                $(pageObj).children().remove()
+                $init = '<li>上一页</li> <li class="FirstPage">1</li> <li>下一页</li>'
+                $(pageObj).html($init)
+                $(pageObj+" .FirstPage").addClass("select")
+                if(total_page<max_show+2){ //如果页码数量小于最大可以显示的数量，那么显示全部页码
+                    for(i=1;i<total_page;i++){
+                        $($(pageObj+" li")[i]).after($("<li>"+(i+1)+"</li>"))
+                    }
+                }else{// 如果页码数量大于最大可以显示的数量，那么显示"最大可以显示的数量"和省略号
+                    for(i=1;i<max_show;i++){
+                        if(i==1){ //一开始，先把最大的页码显示出来
+                            var $index = $(pageObj+" li").length-1
+                            $($(pageObj+" li")[$index]).before($("<li class='FinalPage'>"+total_page+"</li>")).prev().before($("<p class='etc'>...</p>"))
+                        }else if(i==2){// 然后显示第二页，这是因为有可能到这里，就已经达到"最大可以显示的数量"了
+                            if(max_show<=3){
+                                $($(pageObj+" li")[i-1]).after($("<p class='etc'>...</p>")).next().after($("<li class='middle'>"+i+"</li>")).hide()//第1页后面添加省略号，再添加第2页（数字可变的当前页）并且隐藏省略号
+                            }else{
+                                $($(pageObj+" li")[i-1]).after($("<li>"+i+"</li>")).next().after($("<p class='etc'>...</p>"))
+                            }
+                        }else{//最后在两个省略号之间填充按钮
+                            if(i==3){
+                                $($(pageObj+" .etc")[0]).after($("<li class='middle'>"+i+"</li>")).hide() //第一个省略号后面添加第三页
+                            }else{
+                                $($(pageObj+" li")[i-1]).after($("<li class='middle'>"+i+"</li>")) //第3页后面添加
+                            }
+                        }
+                    }
+                }
+                // alert("创建form")
+                $jump = $('<form method="get" class="jumpPage"> <input type="text" name="jumpValue" value="" placeholder="输入页码" class="inputPage"> <input type="button" name="jumpPage" value="跳转" class="jumpButton"> </form>');
+                $(pageObj).append($jump)
+            }
+
+            // 改变页码样式
+            function change_page_style(pageObj, target_page, total_page){
+                // 改变两个省略号中间数字的样式和值(如果需要), 这里设计倾向于，总是把target_page放在页码中间的位置
+                var $li_list = $(pageObj+" li")
+                var $middle_list = $(pageObj+" .middle");
+                var $middle_btn_num = $middle_list.length;
+                var $start = 0;// 要求大于2， 小于total_page-$middle_btn_num, 小于$target_page
+                $start = target_page-parseInt($middle_btn_num/2)
+                if($start>=(total_page - $middle_btn_num)){
+                    $start = total_page - $middle_btn_num//start最大值不能超过总页数
+                }else if($start<=2){
+                    if($middle_list.length==1){ //中间页只有一页的时候，中间页就是低2页
+                        $start = 2
+                    }else{
+                        $start = 3
+                    }
+                }
+                // alert($start)
+
+                $.each($middle_list, function(index,current_item){
+                    $(current_item).html($start+index) 
+                })
+                // 改变当前页码样式
+                $.each($li_list,function(index, current_item){
+                    if($(current_item).html()==target_page){
+                        $(current_item).addClass("select").siblings().removeClass("select")
+                    }
+                })
+                // 改变省略号显示
+                $etc = $(pageObj+" .etc")
+                for(i=0;i<2;i++){
+                    if($etc.length && $($etc[i]).length){
+                        if(($($etc[i]).next().html()-$($etc[i]).prev().html())==1){
+                            $($etc[i]).hide()
+                        }else{
+                            $($etc[i]).show()
+                        }
+                    }
+                }
+            }
+
+            // 页码跳转委托
+            function jump_page(pageObj, currentPageKey, func){
+                // 
+                $(pageObj).delegate("li", "click", function(event){
+                    // 委托点击选项事件给选项的父级元素(ul)
+                    var $li_list = $(pageObj+" li")
+                    var $index = $li_list.index(this)
+                    var $total_page = $($li_list[$li_list.length-2]).html()
+                    var $target_page
+                    // 获取要跳转到哪一页
+                    if($index==0){ //点击上一页
+                        $target_page = parseInt(current_page_dict[currentPageKey])-1
+                        if($target_page<=1){ //小于第一页
+                            $target_page = 1
+                        }
+                    }else if($index==($li_list.length-1)){ // 点击下一页
+                        $target_page = parseInt(current_page_dict[currentPageKey])+1
+                        if($target_page >= $total_page){ //大于最后一页
+                            $target_page = $total_page
+                        }
+                    }else{
+                        $target_page = parseInt($(this).html())
+                    }
+                    
+                    func($target_page)
+                    current_page_dict[currentPageKey] = $target_page
+                    change_page_style(pageObj, $target_page, $total_page)
+                    return false
+                })
+            }
+
+        // +++++++++++++++++++++++++++++++++++++++ daily 提交 ++++++++++++++++++++++++++++++++++++++++++
+            $(function(){
+                $("#dailyID form").submit(function(event){
+                    event.preventDefault();//阻止默认的表单提交
+                    // var formValues = $("#dailyID form").serialize();
+                    var form_data = new FormData(document.getElementById("daily_report_tool"));
+                    // alert(form_data);
+                    // var formValues = document.getElementById("daily_report_tool")
+                    // $.post("daily_report.py", , function(data){
+                    //  $(".main").html(data);
+                    // });
+                    $.ajax({
+                        url:"daily_report.py",
+                        type:"post",
+                        data:form_data,
+                        processData:false,
+                        contentType:false,
+                        success:function(data){
+                            $(".main .daily").show().siblings().hide()
+                            $(".main .daily").html(data);
+                        }
+                    }).done(function(){
+                        $(".main .daily").show().siblings().hide() //进入主页不显示daily
+                        $(".main .daily").css("background-color", "rgb(250,250,250)"); //不透明
+                    })
+                });
+            });
+
+        // +++++++++++++++++++++++++++++++++++++++ FOM 提交函数 ++++++++++++++++++++++++++++++++++++++++++
+            $(function(){
+                $("#FOM_compare_tool").submit(function(event){
+                    event.preventDefault();
+                    var form_data = new FormData(document.getElementById("FOM_compare_tool"));
+                    // var form_data = new FormData($("#FOM_compare_tool")); 这种方式不可行
+                    $.ajax({
+                        url: "FOM_compare.py",
+                        type: "post",
+                        // data: $(this).serialize(),
+                        data: form_data,
+                        processData: false,
+                        contentType: false,
+                        success:function(data){
+                            // $(".main .FOM").css("background-color", "rgb(250,249,230)");
+                            $(".main .FOM").show().siblings().hide()
+                            $(".main .FOM").html(data);
+                            $(".main .FOM").css("background-color", "rgb(250,250,250)"); //不透明
+                        }
+                    })
+
+                });
+            });
+
+
+
+        // +++++++++++++++++++++++++++++++++++++++ 小说工具 ++++++++++++++++++++++++++++++++++++++++++
+            // 获取书籍内容
+            function get_book_content(page){
+                // 改变当前页面地址
+                url =  "/HS_server/note/"+$bookID+"/"
+                var state = {
+                    "title": "小说内容",
+                    "url": url,
+                };
+                var $loading_content = '<div class="loading">正在加载，请稍后...</div>'
+                $(".main .book .input_password").hide();
+                $(".main .shading").hide()
+                $(".main .book .book_content").html($loading_content);
+                history.replaceState(state, "改小说内容链接", url)
+                $.ajax({
+                    url: "content.py",
+                    type: "get",
+                    data: {"bookIndex":$bookIndex, "bookID":$bookID, "bookName":$bookName, "page":page, 'request':'content'},
+                    dataType:"json",
+                    success:function(data){
+                        $(".main .book .title").html($bookName);
+                        $(".main .book .download").show()
+                        $(".main .book .book_content").html(data["book_content"])//.hide()
+                        $(".main .book .book_content").scrollTop(0); // 从顶页显示
+                    }
+                }).done(function(){
+                    // clearInterval($loading_timer)
+                });
+            }
+
+            function get_book_page(){
+                $.ajax({
+                    url: "get_book_page.py",
+                    type: "get",
+                    data: {"bookID":$bookID, "bookName":$bookName, 'request':'page_num'},
+                    dataType:"json",
+                    success:function(data){
+                        create_page(data["page_num"], 8, ".main .book .bookPageList"); 
+                        $(".main .book .bookPageList li").addClass("other_style")
+                        // 绑定点击页面跳转按钮
+                        $(".main .book .jumpButton").click(function(){
+                            get_book_content($(".main .book .inputPage").val())
+                            change_page_style(".main .bookPageList", $(".main .book .inputPage").val(), data["page_num"])
+                        })
+                        // 绑定回车键跳转页面
+                        $(".main .book .inputPage").keypress(function(event){
+                            if(event.which==13){
+                                get_book_content($(".main .book .inputPage").val())
+                                change_page_style(".main .bookPageList", $(".main .book .inputPage").val(), data["page_num"])
+                                return false// 阻止事件冒泡，即阻止按回车默认页面刷新到主页的行为
+                            }
+                        })
+                    }
+                })
+            }
+
+            // 当点击书籍内容页码时 -->（委托点击页码跳转事件给bookPageList）
+            jump_page(".main .bookPageList", "currentReadBookPage", get_book_content)
+
+            // 当点击小说名字时 -->(委托点击小说事件给booklist) 
+            $(".note .bookList").delegate("a", "click", function(event){
+                var $book = $(".note .bookList a");
+                var $index = $book.index(this);
+                $bookIndex = (($index+1)+(current_page_dict["currentBookListPage"]-1)*20)
+                $bookID = $bookIDList[$index]
+                // alert($bookID+$bookIDList)
+                $bookName = $(this).html()
+                // 请求获取书籍内容
+                current_page_dict["currentReadBookPage"] = 1
+                get_book_content(current_page_dict["currentReadBookPage"])
+                get_book_page()
+                return false
+            })
+
+            // 获取书籍列表
+            function get_book_list(page, is_create_page=0){
+                url =  "/HS_server/note/"
+                var state = {
+                    "title": "小说列表",
+                    "url": url,
+                };
+                history.replaceState(state, "改小说列表链接", url)
+
+                $book_num_per_page = 20
+                $.ajax({
+                    url:"note.py",
+                    type:"get",
+                    data:{"page":page, "num":$book_num_per_page},
+                    dataType:"json",
+                    success:function(data){
+                        // 根据返回的内容显示小说列表, 返回的应该是一个json字典
+                        var noteList="";
+                        $.each(data["book_name_list"], function(index,current_item){
+                            // <li><span>1</span><a>书籍1<a></li>
+                            noteList += "<li><span>" + ((index+1)+(page-1)*$book_num_per_page) +"</span><a>"+current_item +"</a><i>"+data["format_list"][index]+"</i></li>"
+                        });
+                        $(".note .bookList").html(noteList); //显示书籍列表
+                        $(".note .bookList").scrollTop(0); // 从顶页显示
+                        $bookIDList = data["book_id_list"]
+                        // alert($bookIDList)
+                        if(is_create_page){
+                            // 获取总页数，生成书籍页码，绑定点击页码事件
+                            var $total_page = parseInt(data["book_total"]/$book_num_per_page)+1
+                            create_page($total_page, 3, ".note .bookPageList")//创建页码
+                            $(".note .jumpButton").click(function(){
+                                get_book_list($(".note .inputPage").val())
+                                change_page_style(".note .bookPageList", $(".note .inputPage").val(), $total_page)
+                            })
+                            $(".note .inputPage").keypress(function(event){
+                                if(event.which==13){
+                                    get_book_list($(".note .inputPage").val())
+                                    change_page_style(".note .bookPageList", $(".note .inputPage").val(), $total_page)
+                                    return false
+                                }
+                            })
+                            // jump_page(".note .bookPageList", "currentBookListPage", get_book_list)
+                        }else{
+                            // change_page_style(".note .bookPageList", page, $total_page)
+                        }
+                    }
+                });
+            }
+
+            // 当点击书籍列表页码时 -->（委托点击页码跳转事件给bookPageList）
+            // 设置代理，只能设置一次，如果重复n次设置，则每次点击都会代理n次
+            jump_page(".note .bookPageList", "currentBookListPage", get_book_list); 
+
+            // 小说样式设置（封闭函数，一开始就执行并且不用命名）
+            (function book_setting(){
+                // 设置默认主题
+                $(".main .book").addClass("theme1")
+                $setting_button = $(".book .setButton");
+                $setting_UI = $(".book .setting")
+                $book_content = $(".book .book_content")
+                $setting_UI.hide();
+                $is_UI_hide = true
+                $current_font_size = 14
+                $current_theme_index = 0
+                // 点击设置按钮
+                $setting_button.click(function(){
+                    if($is_UI_hide){
+                        $setting_UI.show();
+                        $is_UI_hide = false
+                    }else{
+                        $setting_UI.hide();
+                        $is_UI_hide = true
+                    }
+                });
+                // 隐藏设置界面
+                $book_content.click(function(){
+                    $setting_UI.hide();
+                    $is_UI_hide = true;
+                });
+                //委托点击字体事件
+                $setting_UI.delegate(".font", "click", function(event){
+                    index = $(".setting .font").index(this)
+                    if(index==0){
+                        $current_font_size++;
+                        if($current_font_size>20){$current_font_size=20;}
+                    }else{
+                        $current_font_size--;
+                        if($current_font_size<10){$current_font_size=10}
+                    }
+                    // alert($current_font_size)
+                    $book_content.css("font-size", $current_font_size)
+                })
+                //委托点击样式事件
+                $setting_UI.delegate("p", "click", function(event){
+                    index = $(".setting p").index(this)
+                    if(index!=$current_theme_index){
+                        $(".main .book").addClass("theme"+(index+1)).removeClass("theme"+($current_theme_index+1))
+                    }
+                    $current_theme_index = index
+                })
+            })();
+
+            // 下载书籍
+            $(".main .book .download").click(function(){
+                // alert("下载书籍"+$bookID)
+                // 弹框要求输入密码-->请求服务器验证密码
+                // 密码正确，接收文件， 密码错误，要求重输入
+                $(".main .book .input_password").show();
+                $(".main .shading").show()
+            });
+
+            function download_book(){
+                $password = $("input[name='password']").val();
+                // 申请下载文件，表单带上密码, 密码正确，保存文件，关闭弹框， 密码错误，要求重新输入
+                // window.open("note/download?bookID="+$bookID)
+                $.ajax({
+                    url: "note/downloadVerify",
+                    type:"get",
+                    data: {"bookID":$bookID, "password": $password},
+                    dataType: "json",
+                    success:function(data){
+                        if(data["result"]==1){
+                            // alert(data["link"])
+                            // window.open(data["link"])
+                            window.location = data["link"]
+                            $(".main .book .input_password").hide();
+                            $(".main .shading").hide()
+                        }else{
+                            alert("输入错误请重输")
+                        }
+                        return false
+                    }
+                })
+                // window.open("note/download/test.zip")
+            }
+
+            // 点击确认按钮事件
+            $(".main .book .input_password .confirm").click(function(){
+                download_book();
+            });
+            // 点击遮罩后隐藏密码框
+            $(".main .shading").click(function(){
+                $(".main .book .input_password").hide();
+                $(".main .shading").hide()
+                $(".main .shading .message").html("")
+            })
+            // 输入密码后按回车事件
+            $(".main .input_password_frame").keypress(function(event){
+                // alert("按下了键盘")
+                if(event.which==13){
+                    // alert(event.which)
+                    download_book();
+                }
+            })
+            // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+        </script>
+
+    </body>
+</html>
