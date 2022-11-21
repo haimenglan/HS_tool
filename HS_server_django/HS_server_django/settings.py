@@ -62,6 +62,11 @@ ROOT_URLCONF = 'HS_server_django.urls'
 # 定义模板路径
 HS_server_templates_dir = os.path.join(BASE_DIR, "templates")
 STATIC_DIR = os.path.join(BASE_DIR, "static")
+if not os.path.exists(STATIC_DIR):
+    STATIC_DIR = os.path.join(os.path.dirname(os.path.dirname(BASE_DIR)), "static")
+# print("静态文件路径", STATIC_DIR)
+
+
 STATICFILES_DIRS = [STATIC_DIR, ]
 STATIC_URL = 'static/'# 设置url为static开头时，服务器查找文件的路径为"STATICFILES_DIRS"列表中包含的路径
 

@@ -19,17 +19,8 @@ class Python_doc(models.Model):
     def __str__(self):
         # 打印对象的时候，返回名字？
         return self.name
-
-class Hardware_doc(models.Model):
-    name = models.CharField(max_length=100)
-    path = models.CharField(max_length=100, default="")
-    format = models.CharField(max_length=10, default="")
-    order_id = models.IntegerField(null=True, blank=True)
-    def __str__(self):
-        # 打印对象的时候，返回名字？
-        return self.name
-
-class Python_module(models.Model):
+        
+class English_doc(models.Model):
     name = models.CharField(max_length=100)
     path = models.CharField(max_length=100, default="")
     format = models.CharField(max_length=10, default="")
@@ -40,6 +31,14 @@ class Python_module(models.Model):
         # 打印对象的时候，返回名字？
         return self.name
 
+class College_doc(models.Model):
+    name = models.CharField(max_length=100)
+    path = models.CharField(max_length=100, default="")
+    format = models.CharField(max_length=10, default="")
+    order_id = models.IntegerField(null=True, blank=True)
+    def __str__(self):
+        # 打印对象的时候，返回名字？
+        return self.name
 
 class Health_Sensing_doc(models.Model):
     name = models.CharField(max_length=100)
@@ -63,7 +62,7 @@ class HWTE_Station_doc(models.Model):
         # 打印对象的时候，返回名字？
         return self.name
         
-class English_doc(models.Model):
+class Python_module(models.Model):
     name = models.CharField(max_length=100)
     path = models.CharField(max_length=100, default="")
     format = models.CharField(max_length=10, default="")

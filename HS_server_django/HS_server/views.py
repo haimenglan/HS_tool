@@ -1,4 +1,3 @@
-
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect, FileResponse
 from django.shortcuts import redirect
@@ -22,12 +21,10 @@ sys.path.append(MY_DIR)
 sys.path.append(os.path.join(MY_DIR, "modules"))
 
 from tools import UnitdetailsDataTool, compare_overlay_FOMs
-from HS_server.models import Book, Python_doc, Python_module, \
-Health_Sensing_doc, English_doc, HWTE_Station_doc
+from HS_server.models import Book, Python_doc, English_doc, College_doc, Python_module
 from login.models import Contact
-
-G_STATIC_PATH = os.path.join(os.path.dirname(MY_DIR),"static")
 from django.conf import settings
+G_STATIC_PATH =  settings.STATIC_DIR
 daily_down_load_dir = os.path.join(settings.MEDIA_ROOT, "Daily")
 FOM_down_load_dir = os.path.join(settings.MEDIA_ROOT, "FOM")
 import login.views
@@ -276,12 +273,10 @@ def get_book_table(bookTable):
     result = Book
     if bookTable == "python_doc":
         result = Python_doc
-    elif bookTable == "health_sensing":
-        result = Health_Sensing_doc
     elif bookTable == "english":
         result = English_doc
-    elif bookTable == "HWTE_Station":
-        result = HWTE_Station_doc
+    elif bookTable == "college_doc":
+        result = College_doc
     return result
 
 

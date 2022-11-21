@@ -10,6 +10,7 @@ import tkinter.filedialog as tkfile
 import platform
 import threading
 import pickle
+import traceback
 
 #print("当前操作系统是：", platform.system())
 if platform.system() == "Windows":
@@ -29,8 +30,10 @@ from HS_tool_tool import draw_picture
 from HS_tool_tool.compare_rush import Compare_rush
 from HS_tool_tool.miaobiao import Miaobiao
 from HS_tool_tool.compare_overlay_FOMs import Insight_csv,Overlay_compare_fom,My_xlwt
-from HS_tool_tool.DUT_communicationGUI import My_serial
+from HS_tool_tool import DUT_communicationGUI
 from HS_tool_tool.find_records_csv_item import Rcords_csv
+from HS_tool_tool.haimeng_xlwt import Haimeng_xlwt
+from HS_tool_tool import BOM_audit
 # from HS_tool_tool.send_file import SendFileApp
 
 class Contact_listbox(Haimeng_listbox):
@@ -199,21 +202,21 @@ class HS_tool_tool:
             is_FBR_config = self.setting_value_dict["daily report"]["is FBR config"]
             is_platinum = self.setting_value_dict["daily report"]["is platinum"]
             station_list= self.setting_value_dict["daily report"]["entry_value"]
-            print("站位列表是", station_list)
-            # print("****",str(type(show_empty)),is_change_config,is_FBR_config)
             new_station_list = []
             if ";" in station_list:
                 station_list = station_list.split(";")
-                print("站位列表是", station_list)
+                # print("站位列表是", station_list)
+
                 for each_station in station_list:
                     current_station = each_station
-                    while current_station and " " == current_station[-1] or "\n" == current_station[-1]:
+                    while current_station and " " == current_station[-1] or "\n"==current_station[-1]:
                         current_station = current_station[:-1]
-                    while current_station and " " == current_station[0] or "\n" == current_station[0]:
+                    while current_station and " " == current_station[0] or "\n"==current_station[0]:
                         current_station = current_station[1:]
                     new_station_list.append(current_station)
-            print("站位列表是", new_station_list)
-            
+            # print("站位列表是", new_station_list)
+
+            # print("****",str(type(show_empty)),is_change_config,is_FBR_config)
             xls_save_path = tkfile.asksaveasfilename(title="选择保存位置和名称", defaultextension=".xls")
             csv_file_path_multi = ""
             if show_empty:
@@ -227,15 +230,16 @@ class HS_tool_tool:
                 if FBR_xls_file:
                     return
             UnitdetailsDataTool.run_daily_report(csv_path, xls_save_path, show_empty,is_change_config ,
-                                                 is_FBR_config,FBR_xls_file,csv_file_path_multi, is_platinum=is_platinum, order_station_list=station_list)
+                                                 is_FBR_config,FBR_xls_file,csv_file_path_multi, is_platinum=is_platinum, 
+                                                 station_order_list=new_station_list)
 
     def draw_test_item_picture(self):
         csv_file_path_list = tkfile.askopenfilenames(title="选择单个或多个 csv数据 文件")
         if csv_file_path_list != "":
-            # if platform.system()=="Darwin":
+            if platform.system()=="Darwin":
                 # os.system(f'python3 {sys.path[0]+os.sep}pak{os.sep}HS_tool_tool{os.sep}draw_picture.py "{str(csv_file_path_list)}"')
                 # print("已经启动画图")
-            draw_picture.main(csv_file_path_list)
+                draw_picture.main(csv_file_path_list)
                 # draw_picture.run_draw_picture(csv_file_path_list)
 
     def compare_rush(self):
@@ -262,25 +266,38 @@ class HS_tool_tool:
             find_name_list = []
             if ";" in find_name:
                 find_list = find_name.split(";")
-                # print("站位列表是", station_list)
+                print("站位列表是", find_name, find_list)
                 for each_station in find_list:
                     current_station = each_station
-                    while current_station and " " == current_station[-1] or "\n" == current_station[-1]:
+                    print(current_station)
+                    while current_station and (" " == current_station[-1] or "\n" == current_station[-1]):
                         current_station = current_station[:-1]
-                    while current_station and " " == current_station[0] or "\n" == current_station[0]:
+                    while current_station and (" " == current_station[0] or "\n" == current_station[0]):
                         current_station = current_station[1:]
-                    find_name_list.append(current_station)
+                    if current_station:
+                        find_name_list.append(current_station)
+            print("查找列表是", find_name_list)
             records_csv = Rcords_csv(data_directory, search_mode, row_column_mode, find_name_list)
             haimeng_xlwt = Haimeng_xlwt()
             style = haimeng_xlwt.normal_style
             sheet_value_list = records_csv.search_item()
             records_csv.write_item_to_xls(sheet_value_list, style)
 
+    def BOM_audit_(self):
+        old_path = tkfile.askopenfilename(title="choose old BOM xls file path")
+        new_path = tkfile.askopenfilename(title="choose new BOM xls file path")
+        BOM_audit.main(old_path, new_path)
+        tkmessage.showinfo("Hi", "Result file have saved at %s" % (os.path.dirname(old_path)))
+        
+
     def fun_timer(self):
-            self.miaobiao = Miaobiao()
+        self.miaobiao = Miaobiao()
 
     def dut_communication(self):
-        dut_sent_command = My_serial(self.setting_value_dict["Dut communication"]["波特率"], None)
+        new_old_path = ''
+        if self.setting_value_dict["Dut communication"]["change_cmd"]:
+            new_old_path = tkfile.askopenfilename(title="选择command new old command list")
+        dut_sent_command = DUT_communicationGUI.main(self.setting_value_dict["Dut communication"]["波特率"], new_old_path=new_old_path)
 
     # def send_file(self):
     #     SendFileApp()
@@ -304,7 +321,8 @@ class HS_tool_setting:
                 "entry_value": None
             },
             "Dut communication": {
-                "波特率": None
+                "波特率": None,
+                "change_cmd": tk.IntVar()
             }
         }
 
@@ -312,7 +330,7 @@ class HS_tool_setting:
         self.root_setting = tk.Toplevel()
         self.root_setting.title("设置")
         self.screenwidth, self.screenheight=self.root_setting.winfo_screenwidth(),self.root_setting.winfo_screenheight()
-        self.root_width,self.root_height = int(self.screenwidth * 0.4),int(self.screenheight * 0.5)
+        self.root_width,self.root_height = int(self.screenwidth * 0.4),int(self.screenheight * 0.6)
 
         self.root_setting.geometry('%sx%s' % (self.root_width,self.root_height ))
         self.root_setting.geometry('+%s+%s' % (int((self.screenwidth - self.root_width) / 2),
@@ -401,6 +419,10 @@ class HS_tool_setting:
                                           width=20)
         self.setting_tk_dict["Dut communication"]["波特率"].grid(row=1, column=1, padx=10, pady=5, sticky="w")
         self.setting_tk_dict["Dut communication"]["波特率"].insert(0, kwargs["Dut communication"]['波特率'])
+        self.setting_tk_dict["Dut communication"]["change_cmd"].set(kwargs["Dut communication"]["change_cmd"])
+        tk.Checkbutton(self.root_setting_frame_DUT_setting, text="change_cmd", variable=self.setting_tk_dict["Dut communication"]["change_cmd"]) \
+                    .grid(row=1, column=2, padx=10, pady=5, sticky="w")
+
 
     def create_account_setting(self,**kwargs):
         pass
@@ -436,23 +458,26 @@ class HS_tool_setting_app(HS_tool_setting):
             with open(self.setting_file_path, "rb") as f:
                 self.setting_value_dict = pickle.load(f)
         except:
+            traceback.print_exc()
             self.setting_value_dict = {
                 "daily report": {
                     "show_empty": 0,
                     "is change config": 0,
                     "is FBR config": 0,
                     "is platinum": 0,
-                    "entry_value": "在此输入站位以排序,用分号隔开不同站位"
+                    "entry_value": "在此输入站位以排序,用分号隔开"
                 },
                 "Find records_csv": {
                     "指定测试项": 0,
                     "横排/竖排": 0,
-                    "entry_value": "在此输入测项,用分号隔开"
+                    "entry_value": "在此输入不同测项，用分号隔开"
                 },
                 "Dut communication": {
-                    "波特率": 115200
+                    "波特率": 115200,
+                    "change_cmd": 0
                 }
             }
+        print(self.setting_value_dict)
         return self.setting_value_dict
 
     def check_is_setting_change(self):
@@ -476,7 +501,7 @@ class HS_tool_setting_app(HS_tool_setting):
                 else:
                     current_value = self.setting_tk_dict[each_option][each_key].get("1.0", tk.END)
                 if current_value != self.setting_value_dict[each_option][each_key]:
-                    # print(f"保存{self.setting_tk_dict[each_option][each_key]}值为{current_value}")
+                    print(f"保存{self.setting_tk_dict[each_option][each_key]}值为{current_value}")
                     self.setting_value_dict[each_option][each_key] = current_value
                     is_setting_change = True
         if is_setting_change:

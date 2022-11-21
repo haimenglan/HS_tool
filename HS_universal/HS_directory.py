@@ -1,3 +1,4 @@
+directory
 import os
 import sys
 import platform
@@ -13,25 +14,34 @@ class HS_directory:
         3. 用户头像目录Image/Avatar, 所有头像都保存在这个下面
         4. 发送文件目录File
         '''
+        # 系统用户目录
         self.system_user_path = os.path.expanduser("~")
-        self.tool_data_path = os.path.join(self.system_user_path, "HS_tool_data")
-        self.config_dir = self.define_path(os.path.join(self.tool_data_path,"Config"))
-        self.File = self.define_path( os.path.join(self.tool_data_path, "File"))
+        # 文稿目录
+        self.document_path = os.path.join(self.system_user_path, "Documents")
+        # 本工具数据存放路径
+        self.tool_data_path = os.path.join(self.system_user_path, "HS_tool")
+        # 配置文件路径
+        self.config_dir = self.define_path(os.path.join(self.tool_data_path, "Config"))
+        # 文件下载路径
+        self.File = self.define_path(os.path.join(self.tool_data_path, "File"))
+        # 默认头像路径
         self.default_avatar = os.path.join(self.tool_picture_dir, "default_avatar.png")
-        self.help_document = os.path.join(self.tool_home_dir, "HealthSensingTool 说明文档.pdf")
+        # 帮助文档路径
+        self.help_document = os.path.join(self.tool_home_dir, "Resource/HealthSensingTool_doc.pdf")
 
     @property
-    def tool_home_dir(self):  # /Users/js-15400155/Desktop/HS_tool_env/HS_4.0.1
-        init_path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__)))))
-        if "Image" in os.listdir(init_path):
+    def tool_home_dir(self):
+        # 应当返回HS_tool.py 所在路径
+        init_path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))) # py2app
+        if "HS_tool.py" in os.listdir(init_path):
             return init_path
         else:
             init_path = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
-        print("++++++", init_path, os.listdir(init_path))
-        if "Image" in os.listdir(init_path):
-            return init_path
-        else:
-            return self.tool_data_path
+            # print("++++++", init_path, os.listdir(init_path))
+            if "HS_tool.py" in os.listdir(init_path):
+                return init_path
+            else:
+                return self.tool_data_path
 
     def delete_file(self,path):
         # print("删除文件")
@@ -53,13 +63,16 @@ class HS_directory:
 
     @property
     def tool_picture_dir(self):
-        return self.define_path(os.path.join(self.tool_home_dir, f"Image"))
+        return self.define_path(os.path.join(self.tool_home_dir, f"Resource/Image"))
 
     @property
     def user_avartar_dir(self):
         return self.define_path(os.path.join(self.tool_data_path, f"Avatar"))
 
     def read_user_info_file(self, account):
+        '''
+        user_info = {"account": {"name":"xxx", "sign":"xxx", "photo":"xxx", ... "friend_dict":{}...}}
+        '''
         user_info = {}
         if account:
             user_info_path = os.path.join(self.config_dir, account)
@@ -80,10 +93,12 @@ class HS_directory:
         user_info_path = os.path.join(self.config_dir, account)
         current_user_path = os.path.join(self.config_dir, "current_user")
         old_user_info = self.read_user_info_file(account)
+        # print("写入前信息", old_user_info)
         old_user_info.update(user_info)
         for path in [user_info_path, current_user_path]:
             with open(path, "wb") as f:
                 try:
+                    # print("写入后信息", old_user_info)
                     pickle.dump(old_user_info, f)
                 except Exception as e:
                     print(f"保存用户数据文件出错", str(e))

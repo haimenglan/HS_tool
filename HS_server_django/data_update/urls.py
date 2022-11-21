@@ -9,7 +9,7 @@ urlpatterns = [
     re_path(r"^sync_note_in_zip$", views.sync_note_in_zip),
     re_path(r"^sync_python$", views.sync_python),
     re_path(r"^sync_english$", views.sync_english),
-    re_path(r"^sync_hardware$", views.sync_hardware),
+    re_path(r"^sync_college$", views.sync_college),
     re_path(r"^delete_not_exists_file$", views.delete_not_exists_file),
     re_path(r"^sync_wallpaper$", views.sync_wallpaper),
 ]

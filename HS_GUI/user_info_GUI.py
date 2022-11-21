@@ -1,3 +1,4 @@
+userinfoGUI
 import os
 import threading
 from time import sleep
@@ -261,11 +262,8 @@ class User_info_app(User_info_GUI):
                 os.remove(self.my_photo_path)
             except Exception as e:
                 print(f"删除旧头像失败{str(e)}，请手动删除，路径是{self.my_photo_path}")
+        self.my_photo_path = self.new_photo_path
 
     def close_GUI(self):
         User_info_app.have_instace = None
         self.root.destroy()
-
-
-
-

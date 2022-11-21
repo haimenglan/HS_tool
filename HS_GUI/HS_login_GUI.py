@@ -10,30 +10,17 @@ from haimeng_tk import color_change, change_photo
 from HS_main_GUI import HS_tool_app
 from HS_universal.HS_directory import HS_directory
 
-if platform.system() == "Windows":
-    import ctypes
-    # 告诉操作系统使用程序自身的dpi适配
-    ctypes.windll.shcore.SetProcessDpiAwareness(1)
-    # 获取屏幕的缩放因子
-    ScaleFactor = ctypes.windll.shcore.GetScaleFactorForDevice(0)
-    print("缩放系数是", ScaleFactor)
-    # import pathos
-    # from pathos.multiprocessing import ProcessingPool
-
 class Login_GUI:
     def __init__(self, account="", password="", photo_path=""):
         self.account, self.password, self.photo_path = account, password, photo_path
         self.HS_directory = HS_directory()
         self.root = tk.Tk()
-
         # self.root.wm_withdraw()  # 隐藏部件
         self.root.title(" ")
         self.screenwidth = self.root.winfo_screenwidth()
         self.screenheight = self.root.winfo_screenheight()
         if platform.system() == "Windows":
-            ScaleFactor = ctypes.windll.shcore.GetScaleFactorForDevice(1)
-            self.root.tk.call('tk', 'scaling', ScaleFactor/100)
-            print("现在的缩放系数是", ScaleFactor)
+            self.root.tk.call('tk', 'scaling', 2)
             self.root_width = int(self.screenwidth * 0.18)
             self.root_height = int(self.screenwidth * 0.28)
             self.frame_padx = 30
@@ -65,7 +52,7 @@ class Login_GUI:
             self.login_photo_path = photo_path
         else:
             self.login_photo_path = os.path.join(self.HS_directory.tool_picture_dir, "login.png")  # 默认图片
-        # print("登录图片路径",self.login_photo_path)
+        print("登录图片路径",self.login_photo_path)
         self.login_photo = change_photo(self.login_photo_path, int(self.root_width*0.8),
                                         height=int(self.root_width*0.8), is_zoomout=True, is_square=False)[0]
         self.login_image_label = tk.Label(self.login_frame, image=self.login_photo)
@@ -199,8 +186,8 @@ class Login_bind_event(Login_GUI):
             # print("发送登录数据")
             if self.account == "hs" and self.password == "hs":
                 self.login_success()
-                self.HS_directory.write_user_info_file(self.account,
-                                                       {"account": self.account, "password": self.password})
+                self.HS_directory.write_user_info_file(self.account, {"account": self.account,
+                                                                      "password": self.password})
                 self.HS_tool_GUI = HS_tool_app(self.root, self.account)
             else:
                 self.q_sent.put([{"event": "login", "account": self.account, "password": self.password, "content_type":"text"}, ""])
@@ -208,12 +195,12 @@ class Login_bind_event(Login_GUI):
         return is_meet_demand, self.account, self.password
 
     def register(self, event=None):
-        print("点击注册按钮")
+        # print("点击注册按钮")
         is_meet_demand = self.check_account_format()
         if is_meet_demand:
             confirm = tk.messagebox.askyesno("Hi", f"确定用此账户{self.account}, 和密码{self.password}注册吗")
             if confirm:
-                print("发送注册事件")
+                # print("发送注册事件")
                 self.q_sent.put(
                     [{"event": "register", "account": self.account, "password": self.password, "content_type": "text"},
                      ""])
@@ -238,6 +225,12 @@ def add_event2dict(event_name):
 
 
 class Login_app(Login_bind_event):
+    have_instace = False
+    def __new__(cls, q_sent=None, q_recv=None, account="", password="", photo_path=""):
+        if not cls.have_instace:
+            cls.have_instace = True
+            return super().__new__(cls)
+
     def __init__(self, q_sent=None, q_recv=None, account="", password="", photo_path=""):
         super().__init__(q_sent, q_recv, account, password, photo_path)
         self.stop_handle_event = False
@@ -255,10 +248,8 @@ class Login_app(Login_bind_event):
                 self.stop_handle_event = True
                 if "account" in data_dict and "password" in data_dict:
                     self.account, self.password = data_dict["account"], data_dict["password"]
-                self.HS_directory.write_user_info_file(self.account,
-                                                       {"account": self.account, "password": self.password,
-                                                        "cookie": data_dict["cookie"]})
-
+                self.HS_directory.write_user_info_file(self.account, {"account":self.account,"password":self.password,
+                                                                      "cookie":data_dict["cookie"]})
                 self.HS_tool_GUI = HS_tool_app(self.root, self.account,
                                                q_sent=self.q_sent, q_recv=self.q_recv,  cookie=data_dict["cookie"])
             else:
@@ -281,6 +272,11 @@ class Login_app(Login_bind_event):
     def relogin_event(self, data_dict=None, body=''):
         pass
 
+    @add_event2dict("login_in_other_place")
+    def relogin_event(self, header_dict=None, body=''):
+        tk.messagebox.showinfo("Hi", "有人尝试从其他地方登录你的账号")
+
+
     def get_q(self):
         while True:
             if not self.q_recv.empty():
@@ -292,7 +288,6 @@ class Login_app(Login_bind_event):
                     event = data_dict["event"]
                     event_dict[event](self, data_dict, body)
             if self.stop_handle_event:
-                print("接收登录GUI获取事件")
+                # print("接收登录GUI获取事件")
                 break
             time.sleep(0.01)
-

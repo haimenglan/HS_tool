@@ -15,13 +15,14 @@ import time
 import datetime
 import webbrowser
 from multiprocessing import Queue
+import shutil
 if platform.system() == "Windows":
     import ctypes
     # 告诉操作系统使用程序自身的dpi适配
     ctypes.windll.shcore.SetProcessDpiAwareness(1)
     # 获取屏幕的缩放因子
     ScaleFactor = ctypes.windll.shcore.GetScaleFactorForDevice(0)
-    print("缩放系数是", ScaleFactor)
+    #print("缩放系数是", ScaleFactor)
     # import pathos
     # from pathos.multiprocessing import ProcessingPool
 
@@ -45,11 +46,11 @@ class HS_tool_GUI:
         # print("创建主界面")
         self.init_GUI()
         if platform.system() == "Windows":
-            ScaleFactor = ctypes.windll.shcore.GetScaleFactorForDevice(1)
-            self.root.tk.call('tk', 'scaling', 1.75)
+            self.root.tk.call('tk', 'scaling', 2)
             self.root_width = int(self.screenwidth * 0.65)
             self.root_height = int(self.screenheight * 0.5)
         else:
+            # self.root.tk.call('tk', 'scaling', 2560/1440)
             self.root_width = int(self.screenwidth * 0.7)
             self.root_height = int(self.screenheight * 0.53)
         self.root.geometry('%sx%s' % (self.root_width, self.root_height))
@@ -277,10 +278,10 @@ class HS_tool_GUI:
 
     def remove_start_enter(self, string):
         data = string
-        data_re = re.search("^\n", data)
+        data_re = re.search(" \n", data)
         while data_re != None:
             data = data[1:]
-            data_re = re.search("^\n", data)
+            data_re = re.search(" \n", data)
             if data == "":
                 return ""
         return data
@@ -371,6 +372,8 @@ class HS_tool_tool_GUI(HS_tool_GUI):
              "function": self.HS_tool_tool_obj.overlay_FOMs_tool},
             {"image_path": "find_records.png", "image": None, "name": "Find Records.csv",
              "function": self.HS_tool_tool_obj.find_records_csv},
+            {"image_path": "BOM_audit.png", "image": None, "name": "BOM audit",
+             "function": self.HS_tool_tool_obj.BOM_audit_},
             {"image_path": "miao_biao.png", "image": None, "name": "秒表", "function": self.HS_tool_tool_obj.fun_timer},
             {"image_path": "DUT.png", "image": None, "name": "机台通信", "function": self.HS_tool_tool_obj.dut_communication},
             {"image_path": "web.png", "image": None, "name": "我的网站", "function": self.open_web_version}
@@ -382,11 +385,50 @@ class HS_tool_tool_GUI(HS_tool_GUI):
             self.create_tool_button(i)
             i += 1
 
+    def detect_static_file(self):
+        home_path = self.HS_directory.tool_home_dir
+        have_static = False
+        HS_server_django_symple_path = ""
+        for current_path, dirs, files in os.walk(home_path):
+            # print(current_path, dirs, files)
+            if "HS_server_django_symple" == os.path.basename(current_path):
+                print("找到路径", current_path, os.listdir(current_path))
+                HS_server_django_symple_path = current_path
+                if "static" in os.listdir(current_path):
+                    have_static = True
+                    return have_static, HS_server_django_symple_path
+        return have_static, HS_server_django_symple_path
+
+    def cp_static(self, HS_server_django_symple_path):
+        # 复制资源包到django项目路径
+        static_path = ""
+        directory = tkfile.askdirectory(message="选择资源包或者旧版app所在文件夹")
+        if directory:
+            if os.path.basename(directory) == "static":
+                static_path = directory
+            else:
+                for current_path, dirs, files in os.walk(directory):
+                    if "static" == os.path.basename(current_path) and "HS_server" in os.listdir(current_path):
+                        static_path = current_path
+            if static_path:
+                print("找到资源包", static_path)
+                # todo 把找到的资源包移动/复制到HS_server_django_symple_path下面
+                # shutil.copytree(static_path, os.path.jion(HS_server_django_symple_path, "static"))
+                shutil.move(static_path, HS_server_django_symple_path)
+                tk.messagebox.showinfo("Hi", "资源包加载完成，请重启")
+            else:
+                tk.messagebox.showinfo("Hi", "你选择的路径下找不到资源包")
+
+
     def open_web_version(self):
-        if platform.system() == "Windows":
-            webbrowser.open("http://192.168.0.103:7788/HS_server")
+        have_static, HS_server_django_symple_path = self.detect_static_file()
+        if have_static:
+            if platform.system() == "Windows":
+                webbrowser.open("http://192.168.0.103:7788/HS_server")
+            else:
+                webbrowser.open("http://127.0.0.1:7799/HS_server")
         else:
-            webbrowser.open("http://10.54.100.117:7788/HS_server")
+            self.cp_static(HS_server_django_symple_path)
 
 
 event_dict = dict()
@@ -441,23 +483,24 @@ class HS_tool_app(HS_tool_tool_GUI):
             self.update_time_interval = 60
 
     def reflesh_info(self, event=None):
-        print("获取信息事件")
+        # print("获取信息事件")
         self.get_my_info()
         self.get_friend_info()
         self.get_message()
 
     def update_info(self):
         while True:
-            print("刷新信息")
+            # print("刷新信息")
             self.reflesh_info()
+            # time.sleep(self.update_time_interval)
             time.sleep(300)
 
     def root_activate(self, event):
-        print("组件被唤醒")
-        self.update_time_interval = 5
+        # print("组件被唤醒")
+        self.update_time_interval = 10
 
     def root_deactivate(self, event):
-        print("组件进入休眠")
+        # print("组件进入休眠")
         self.update_time_interval = 300
 
     def bind_event(self):
@@ -508,8 +551,8 @@ class HS_tool_app(HS_tool_tool_GUI):
 
     @add_event2dict("get_avatar")
     def get_avatar_result(self, header_dict, body):
-        print("GUI收到获取头像结果")
-        if "file_name" in header_dict:
+        # print("GUI收到获取头像结果")
+        if "file_name" in header_dict and body=="success":
             self.reflesh_info()
 
     def get_avatar(self, account):
@@ -519,14 +562,14 @@ class HS_tool_app(HS_tool_tool_GUI):
                          "content_type": "text", "save_path": save_path}, "")
 
     def get_my_info(self):
-        print("获取我的信息")
+        # print("获取我的信息")
         self.sent_event({"event": "get_my_info", "cookie": self.cookie, "content_type": "text"}, "")
 
     @add_event2dict("get_my_info")
     def get_my_info_result(self, header_dict, body):
         # 返回顺序id,account,password,name,ip,port,is_online,photo,sign,birthday,gender,address,phone,mail,
         # is_delete,cookie,fd_file,connect_time,internal_port
-        print("返回了我的信息", header_dict)
+        # print("返回了我的信息", header_dict)
         if body and isinstance(body, tuple):
             my_info_list = list(body[0])
             key_list = ["name", "sign", "photo", "birthday", "gender", "address", "phone", "mail"]
@@ -552,10 +595,10 @@ class HS_tool_app(HS_tool_tool_GUI):
                     result = self.HS_directory.default_avatar
                 else:
                     result = os.path.join(self.HS_directory.user_avartar_dir, value_list[i])
-                    print("该用户头像是", result)
+                    # print("该用户头像是", result)
                     if not os.path.exists(result):  # todo 如果好友头像不存在，需要申请下载
                         result = self.HS_directory.default_avatar
-                        print("本地找不到该用户头像", result)
+                        # print("本地找不到该用户头像", result)
                         self.get_avatar(account)
             elif each_key=="name":
                 result = account if value_list[i] == "" else value_list[i]
@@ -583,20 +626,20 @@ class HS_tool_app(HS_tool_tool_GUI):
     @add_event2dict("modify_my_info")
     def modify_my_info_result(self, header_dict, body):
         if body == "success":
-            print("修改我的信息成功")
+            # print("修改我的信息成功")
             self.reflesh_info()
 
     @add_event2dict("modify_friend_info")
     def modify_friend_info_result(self, header_dict, body):
         if body == "success":
-            print("修改好友信息成功")
+            # print("修改好友信息成功")
             self.reflesh_info()
 
     @add_event2dict("change_my_avatar")
     def change_my_avatar_result(self, header_dict, body):
-        print("修改头像结果", header_dict, body)
+        # print("修改头像结果", header_dict, body)
         if body == "success":
-            print("修改我的头像成功")
+            # print("修改我的头像成功")
             self.reflesh_info()
             try:
                 self.user_info_GUI.change_user_photo_success()
@@ -616,7 +659,7 @@ class HS_tool_app(HS_tool_tool_GUI):
             user_info_dict["nickname"] = ""
         else:
             user_info_dict = self.friend_dict[account]
-        print("用户信息++++++++++++++++++++", user_info_dict)
+        # print("用户信息++++++++++++++++++++", user_info_dict)
         if "cookie" not in user_info_dict:
             user_info_dict["cookie"] = self.cookie
         self.user_info_GUI = User_info_app(owner_account=self.account, sent_event_fun=self.sent_event, **user_info_dict)
@@ -679,12 +722,13 @@ class HS_tool_app(HS_tool_tool_GUI):
             self.insert_friend(index, account, name=name, sign=sign, image_name=photo,
                                contact_time=contact_time, isonline="", is_online=is_online)
         else:
-            print("开始更新好友信息", name)
+            # print("开始更新好友信息", name)
             parametor_list = ["image_name", "name", "sign", "contact_time", "message", "is_online"]
             value_list = [photo, name, sign, contact_time, "", is_online]
             result_list = self.replace_info(account, parametor_list, value_list)  # 替换列表中的空值为默认值
             self.contact_listbox.update_user_info(account, image_path=result_list[0], name=result_list[1],
                                                   sign=result_list[2], contact_time=result_list[3], status=result_list[5])
+            # print("更新完成",self.contact_listbox.item_dict[account])
             # if is_online:
             #     self.contact_listbox.change_item_index(self.contact_listbox.item_dict[account]["item"].index, 0)
 
@@ -693,45 +737,30 @@ class HS_tool_app(HS_tool_tool_GUI):
 
     @add_event2dict("get_friend_info")
     def get_friend_info_result(self, header_dict, body):
-        print("收到用户信息结果", threading.current_thread(), header_dict, body)
+        # print("收到用户信息结果", threading.current_thread(), header_dict, body)
         # if 'tuple' in str(type(body)) and body:
+        self.friend_dict = {}
         if body and isinstance(body, tuple):
-            self.friend_dict = {}
-            if body and isinstance(body, tuple):
-                for index, each_friend in enumerate(body):
-                    [account, name, sign, photo, is_online,
-                                birthday, gender, address, phone, mail, ip, nickname, time] = list(each_friend)
-                    # self.friend_dict[account] = list(each_friend)
-                    self.friend_dict[account] = {"account": account,
-                        "name": name, "sign":sign, "photo":photo, "is_online":is_online, "birthday":birthday,
-                        "gender":gender, "address":address, "phone":phone, "mail":mail, "ip":ip, "nickname":nickname, "time":time
-                    }
-                    # print(f"名字：{name}，签名:{sign}")
-                    self.update_friend(index, account)
-            self.HS_directory.write_user_info_file(self.account, {"friend_dict": self.friend_dict})
+            for index, each_friend in enumerate(body):
+                [account, name, sign, photo, is_online,
+                            birthday, gender, address, phone, mail, ip, nickname, time] = list(each_friend)
+                # self.friend_dict[account] = list(each_friend)
+                self.friend_dict[account] = {"account": account,
+                    "name": name, "sign":sign, "photo":photo, "is_online":is_online, "birthday":birthday,
+                    "gender":gender, "address":address, "phone":phone, "mail":mail, "ip":ip,
+                    "nickname":nickname, "time":time
+                }
+                # print(f"名字：{name}，签名:{sign}")
+                self.update_friend(index, account)
+            # print("更新好友信息到本地", self.friend_dict)
+        self.HS_directory.write_user_info_file(self.account, {"friend_dict": self.friend_dict})
 
-    @add_event2dict("user_info_change")
-    def user_info_change(self, header_dict=None, body=''):
-        print("有好友信息变更")
-        if body:
-            print("变更信息的好友是", body)
-            [account, name, sign, photo, is_online, birthday, gender, address, phone, mail] = list(body)
-            self.friend_dict[account] = {"account": account,
-                                         "name": name, "sign": sign, "photo": photo, "is_online": is_online,
-                                         "birthday": birthday,
-                                         "gender": gender, "address": address, "phone": phone, "mail": mail,
-                                         "nickname": self.friend_dict[account]["nickname"], "time":
-                                         self.friend_dict[account]["time"]
-                                        }
-            print("更新该好友信息")
-            self.update_friend(0, account)
-            self.HS_directory.write_user_info_file(self.account, {"friend_dict": self.friend_dict})
 
 # +++++++++++++++++++++++++++++++++++++++删除好友++++++++++++++++++++++++++++
-
     def delete_friend(self, account, item):
         self.sent_event(
             {"event": "delete_friend", "cookie": self.cookie, "target_account": account, "content_type": "text"}, "")
+
 
     @add_event2dict("delete_friend")
     def delete_friend_result(self, header_dict, body):
@@ -740,7 +769,7 @@ class HS_tool_app(HS_tool_tool_GUI):
             account = header_dict["target_account"]
             item = self.contact_listbox.item_dict[account]["item"]
             self.contact_listbox.delete_item(account, item)
-            print("我的好友列表", self.friend_dict)
+            # print("我的好友列表", self.friend_dict)
             if account in self.friend_dict:
                 self.friend_dict.pop(account)
                 self.HS_directory.write_user_info_file(self.account, {"friend_dict": self.friend_dict})
@@ -754,7 +783,7 @@ class HS_tool_app(HS_tool_tool_GUI):
         if body == "success":
             # self.reflesh_info()
             new_add_friend = eval(header_dict["result"])[0]
-            print("添加好友成功", new_add_friend)
+            # print("添加好友成功", new_add_friend)
             [account, name, sign, photo, is_online,
              birthday, gender, address, phone, mail, ip, nickname, time] = list(new_add_friend)
             self.friend_dict[account] = {"account": account,
@@ -774,17 +803,17 @@ class HS_tool_app(HS_tool_tool_GUI):
         if recv_time == "":
             recv_time = changelocaltimeToSqldatetime()
         if from_account not in self.friend_dict:
-            print("正在添加好友", from_account)
+            # print("正在添加好友", from_account)
             self.friend_dict[from_account] = {"account": from_account,
-                                              "name": from_account, "sign": "", "photo": "", "is_online": b'\x00',
-                                              "birthday": "",
-                                              "gender": "", "address": "", "phone": "", "mail": "", "ip": "",
-                                              "nickname": "", "time": recv_time
-                                              }
+                    "name": from_account, "sign":"", "photo":"", "is_online":b'\x00', "birthday":"",
+                    "gender":"", "address":"", "phone":"", "mail":"", "ip":"", "nickname":"", "time":recv_time
+                }
             self.update_friend(0, from_account)
+            # self.HS_directory.write_user_info_file(self.account, {"friend_dict": self.friend_dict})
         self.sent_event(
             {"event": "add_new_friend", "cookie": self.cookie, "target_account": from_account, "content_type": "text"},
             "")
+
 
 # +++++++++++++++++++++++++++++++++++++++搜索好友++++++++++++++++++++++++++++
     def add_new_friend_from_search(self, event):
@@ -813,7 +842,7 @@ class HS_tool_app(HS_tool_tool_GUI):
         服务器返回检索结果会调用此函数
         # todo 显示用户的名字
         """
-        # print("返回搜索好友结果", threading.current_thread())
+        # print("收到返回搜索好友结果", header_dict, body)
         new_user_list = []
         if header_dict and body and isinstance(body, tuple):
             for each_user in body:
@@ -829,9 +858,10 @@ class HS_tool_app(HS_tool_tool_GUI):
         if "from_account" in header_dict:
             from_account = header_dict["from_account"]
             recv_time = header_dict["time"]
-            # print("+++++++++++++++准备插入时间", recv_time, recv_time.split(" ")[-1])
             if from_account not in self.contact_listbox.item_dict:
+                # print("用户不存在，添加好友中")
                 self.add_new_friend(from_account)
+            # print("检查好友box", self.contact_listbox.item_dict)
             self.contact_listbox.create_message(from_account, "w", "s", body, contact_time=recv_time.split(" ")[-1])
             
 
@@ -855,7 +885,7 @@ class HS_tool_app(HS_tool_tool_GUI):
         # todo 界面上显示消息发送成功或者失败结果
         # print("收到用户信息结果", header_dict, body)
         if "error" in header_dict:
-            self.contact_listbox.create_message(self.account, "e", "s", f"发送失败，{header_dict['error']}",
+            self.contact_listbox.create_message(header_dict["target_account"], "e", "s", f"发送失败{header_dict['error']}",
                                                 photo_path=self.my_photo_path)
             # print("消息发送失败", body)
         else:
@@ -909,7 +939,7 @@ class HS_tool_app(HS_tool_tool_GUI):
 
     @add_event2dict("get_file")
     def get_file_result(self, header_dict, body):
-        print("获取文件结果", header_dict, body)
+        # print("获取文件结果", header_dict, body)
         from_account = ""
         file_name, file_path = '', ''
         if "file_path" in header_dict:
@@ -923,9 +953,9 @@ class HS_tool_app(HS_tool_tool_GUI):
             result = "已接收"
             result_info = f"文件{file_name}接收完成"
         if "message_ID" in header_dict:
-            print(f"收到{header_dict['from_account']}的文件, 正在修改显示图标", time.time())
+            # print(f"收到{header_dict['from_account']}的文件, 正在修改显示图标", time.time())
             self.change_message_UI(header_dict["message_ID"], header_dict["from_account"], result, file_path)
-            print(time.time())
+            # print(time.time())
 
 
     @add_event2dict("send_file")
@@ -957,6 +987,18 @@ class HS_tool_app(HS_tool_tool_GUI):
         header_dict["cookie"] = self.cookie
         self.sent_event(header_dict, "")
 
+    def add_new_friend_call_back_for_recv_file(self, from_account, recv_time, image_path, image_width, file_name, link,
+                                               header_dict):
+        message_ID = self.contact_listbox.create_message(from_account, "w", "s",
+                                                         data="",
+                                                         contact_time=recv_time.split(" ")[-1],
+                                                         image_path=image_path,
+                                                         image_width=image_width,
+                                                         persent=f"{file_name} 接收中",
+                                                         link=link)
+        header_dict["message_ID"] = message_ID
+        self.get_file(header_dict)
+
     @add_event2dict("recv_file")
     def recv_file(self, header_dict, body):
         # print("收到某人的文件。。。", header_dict, body)
@@ -967,24 +1009,25 @@ class HS_tool_app(HS_tool_tool_GUI):
             if from_account not in self.contact_listbox.item_dict:
                 self.add_new_friend(from_account)
             message_ID = self.contact_listbox.create_message(from_account, "w", "s",
-                                                             data="",
-                                                             contact_time=recv_time.split(" ")[-1],
-                                                             image_path=image_path,
-                                                             image_width=image_width,
-                                                             persent=f"{file_name} 接收中",
-                                                             link=link)
+                                                         data="",
+                                                         contact_time=recv_time.split(" ")[-1],
+                                                         image_path=image_path,
+                                                         image_width=image_width,
+                                                         persent=f"{file_name} 接收中",
+                                                         link=link)
             # 获取文件
             header_dict["message_ID"] = message_ID
             self.get_file(header_dict)
+
 
     def get_image_and_width(self, file_path):
         """
         文件不存在则看不见消息
         """
         self.file_image_path = os.path.join(self.HS_directory.tool_picture_dir, "file.png")
-        self.files_image_path = os.path.join(self.HS_directory.tool_picture_dir, "files.jpg")
+        self.files_image_path = os.path.join(self.HS_directory.tool_picture_dir, "files.png")
         self.directory_image_path = os.path.join(self.HS_directory.tool_picture_dir, "directory.png")
-        self.unknow_image_path = os.path.join(self.HS_directory.tool_picture_dir, "unknow.png")
+        self.unknow_image_path = os.path.join(self.HS_directory.tool_picture_dir, "unknown.png")
         check_list = [".png", ".jpg", ".jepg", ".PNG", ".JPG", ".JEPG"]
         if os.path.isfile(file_path):
             if not (os.path.splitext(file_path)[-1] in check_list):  # 文件
@@ -1074,6 +1117,24 @@ class HS_tool_app(HS_tool_tool_GUI):
     def relogin_event(self, header_dict=None, body=''):
         tk.messagebox.showinfo("Hi", "有人尝试从其他地方登录你的账号")
 
+    # ++++++++++++++++++++++++++++++++++++++好友信息变更提醒++++++++++++++++++++++++++++++++
+    @add_event2dict("user_info_change")
+    def user_info_change(self, header_dict=None, body=''):
+        # print("有好友信息变更")
+        if body:
+            # print("变更信息的好友是", body)
+            [account, name, sign, photo, is_online,
+                birthday, gender, address, phone, mail] = list(body)
+            self.friend_dict[account] = {"account": account,
+                                         "name": name, "sign": sign, "photo": photo, "is_online": is_online,
+                                         "birthday": birthday,
+                                         "gender": gender, "address": address, "phone": phone, "mail": mail,
+                                         "nickname": self.friend_dict[account]["nickname"], "time": self.friend_dict[account]["time"]
+                                         }
+            # print("更新该好友信息")
+            self.update_friend(0, account)
+            self.HS_directory.write_user_info_file(self.account, {"friend_dict": self.friend_dict})
+
 # ++++++++++++++++++++++++++++++++ 通讯接口 ++++++++++++++++++++++++++++
     def sent_event(self, header_dict, body):
         # print("GUI发送事件", header_dict) 发不出去可能会导致卡住, 比如客户端进程被杀死的时候(一台电脑双开两个此工具，
@@ -1089,7 +1150,7 @@ class HS_tool_app(HS_tool_tool_GUI):
                 recv_data = self.q_recv.get()  # 阻塞
                 header_dict, body = recv_data[0], recv_data[1]
                 # body = recv_data[1]
-                print("主界面收到事件返回数据", header_dict, body)
+                # print("主界面收到事件返回数据", header_dict, body)
                 # print("我是多线程", threading.current_thread())
                 if "event" in header_dict and header_dict["event"] in event_dict:
                     # self.root.after_idle(event_dict[header_dict["event"]], self, header_dict, body)  # 此为多线程
@@ -1099,6 +1160,3 @@ class HS_tool_app(HS_tool_tool_GUI):
             except Exception as e:
                 traceback.print_exc()
                 # print("主界面处理事件失败", str(e))
-
-
-
