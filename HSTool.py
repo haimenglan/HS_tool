@@ -1,3 +1,4 @@
+# edit by my android 0205
 import multiprocessing
 multiprocessing.freeze_support()
 #! /usr/bin/env python3.7
